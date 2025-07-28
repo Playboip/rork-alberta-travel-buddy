@@ -91,6 +91,8 @@ Developed with ❤️ for Alberta travelers.`,
   };
 
   const contactSupport = () => {
+    if (!user) return;
+    
     const subject = encodeURIComponent('Alberta Travel Buddy - Support Request');
     const body = encodeURIComponent(`Hi Alberta Travel Buddy Support,
 
