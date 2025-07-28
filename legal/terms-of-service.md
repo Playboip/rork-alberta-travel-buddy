@@ -127,9 +127,10 @@ We may update these Terms from time to time. We will notify you of significant c
 If you have questions about these Terms, please contact us at:
 
 **Alberta Travel Buddy**  
-Email: [Your Email]  
-Address: [Your Address]  
-Phone: [Your Phone Number]
+Website: https://albertatravelbuddy.com  
+Email: support@albertatravelbuddy.com  
+Address: Alberta, Canada  
+Phone: Available through app support
 
 ---
 

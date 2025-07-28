@@ -178,9 +178,10 @@ Continued use of the app after changes constitutes acceptance of the updated pol
 If you have questions about this Privacy Policy or our privacy practices, please contact us:
 
 **Alberta Travel Buddy**  
+Website: https://albertatravelbuddy.com  
 Email: privacy@albertatravelbuddy.com  
-Address: [Your Address]  
-Phone: [Your Phone Number]
+Address: Alberta, Canada  
+Phone: Available through app support
 
 For data protection inquiries, you can also contact our Data Protection Officer at: dpo@albertatravelbuddy.com
 
