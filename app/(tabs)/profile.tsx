@@ -100,7 +100,7 @@ I need help with:
 
 [Please describe your issue here]
 
-User: ${user.email}
+User: ${user?.email || 'Not logged in'}
 App Version: ${APP_CONFIG.version}
 
 Thank you!`);
