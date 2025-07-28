@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { User, MapPin, Bell, Shield, Info, Settings, LogOut, Edit, Crown, CreditCard } from 'lucide-react-native';
+import { User, MapPin, Bell, Shield, Info, Settings, LogOut, Edit, Crown, CreditCard, Mail } from 'lucide-react-native';
 import { Stack, router } from 'expo-router';
 import { useAuth } from '@/hooks/auth-context';
 import { useSubscription } from '@/hooks/subscription-context';
+import { APP_CONFIG } from '@/constants/app-config';
+import * as Linking from 'expo-linking';
 
 interface UserPreferences {
   notifications: boolean;
@@ -78,14 +80,37 @@ export default function ProfileScreen() {
 
   const showAbout = () => {
     Alert.alert(
-      'About Alberta Travel Assistant',
-      `Version 1.0
+      'About Alberta Travel Buddy',
+      `Version ${APP_CONFIG.version}
 
-Your intelligent travel companion for exploring from Alberta. Powered by AI to help you discover, plan, and stay safe on your adventures.
+Your intelligent travel companion for exploring Alberta's hidden gems. Discover unique accommodations, local experiences, and plan your complete adventure.
 
 Developed with ❤️ for Alberta travelers.`,
       [{ text: 'OK' }]
     );
+  };
+
+  const contactSupport = () => {
+    const subject = encodeURIComponent('Alberta Travel Buddy - Support Request');
+    const body = encodeURIComponent(`Hi Alberta Travel Buddy Support,
+
+I need help with:
+
+[Please describe your issue here]
+
+User: ${user.email}
+App Version: ${APP_CONFIG.version}
+
+Thank you!`);
+    const mailtoUrl = `mailto:${APP_CONFIG.emails.support}?subject=${subject}&body=${body}`;
+    
+    Linking.openURL(mailtoUrl).catch(() => {
+      Alert.alert(
+        'Contact Support',
+        `Please email us at: ${APP_CONFIG.emails.support}`,
+        [{ text: 'OK' }]
+      );
+    });
   };
 
   const handleLogout = () => {
@@ -225,6 +250,14 @@ Developed with ❤️ for Alberta travelers.`,
             <View style={styles.settingInfo}>
               <Text style={styles.settingTitle}>App Settings</Text>
               <Text style={styles.settingDescription}>Customize your app experience</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.settingCard} onPress={contactSupport}>
+            <Mail color="#6b7280" size={24} />
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingTitle}>Contact Support</Text>
+              <Text style={styles.settingDescription}>Get help with your account or bookings</Text>
             </View>
           </TouchableOpacity>
 
