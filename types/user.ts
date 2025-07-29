@@ -4,14 +4,14 @@ export interface User {
   name: string;
   location: string;
   emergencyContact?: string;
-  subscriptionTier: 'free' | 'starter' | 'pro';
+  subscriptionTier: 'free' | 'explorer' | 'adventurer';
   subscriptionStatus: 'active' | 'canceled' | 'past_due' | 'trialing';
   subscriptionId?: string;
   createdAt: string;
 }
 
 export interface SubscriptionTier {
-  id: 'free' | 'starter' | 'pro';
+  id: 'free' | 'explorer' | 'adventurer';
   name: string;
   price: number;
   interval: 'month';

@@ -45,7 +45,7 @@ export default function SubscriptionScreen() {
     }
   };
 
-  const getTierGradient = (tierId: string) => {
+  const getTierGradient = (tierId: string): [string, string] => {
     switch (tierId) {
       case 'free': return ['#f3f4f6', '#e5e7eb'];
       case 'explorer': return ['#fed7aa', '#fdba74'];
