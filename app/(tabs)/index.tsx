@@ -5,6 +5,7 @@ import { MapPin, Compass, Sparkles, Search, TrendingUp, Percent, Home, Car, Uten
 import { Stack, router } from 'expo-router';
 import { Image } from 'expo-image';
 import DiscountBanner from '@/components/shared/DiscountBanner';
+import Logo from '@/components/shared/Logo';
 
 interface Destination {
   id: string;
@@ -189,6 +190,7 @@ Rating: ${destination.rating}/5`,
           style={styles.header}
         >
           <View style={styles.headerContent}>
+            <Logo size={80} style={styles.logo} />
             <Text style={styles.greeting}>Ready to explore?</Text>
             <Text style={styles.subtitle}>Discover amazing destinations from Alberta</Text>
             
@@ -404,6 +406,9 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     alignItems: 'center',
+  },
+  logo: {
+    marginBottom: 16,
   },
   greeting: {
     fontSize: 28,

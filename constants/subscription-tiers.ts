@@ -16,11 +16,11 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     ]
   },
   {
-    id: 'starter',
-    name: 'Starter Adventurer',
+    id: 'explorer',
+    name: 'Alberta Travel Buddy Explorer',
     price: 4.99,
     interval: 'month',
-    stripePriceId: 'price_1234567890_starter', // Replace with your actual Stripe price ID
+    stripePriceId: 'https://buy.stripe.com/5kQ00j4sIcu63DU9OC5AQ0W',
     popular: true,
     features: [
       'Unlimited AI trip plans',
@@ -33,13 +33,13 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     ]
   },
   {
-    id: 'pro',
-    name: 'Pro Explorer',
+    id: 'adventurer',
+    name: 'Alberta Travel Buddy Adventurer',
     price: 9.99,
     interval: 'month',
-    stripePriceId: 'price_1234567890_pro', // Replace with your actual Stripe price ID
+    stripePriceId: 'https://buy.stripe.com/8x27sL6AQ51E2zQbWK5AQ0X',
     features: [
-      'Everything in Starter',
+      'Everything in Explorer',
       'Advanced route optimization',
       'Group trip planning & sharing',
       'Exclusive destination guides',

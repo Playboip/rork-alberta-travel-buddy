@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Check, Crown, Star, Zap } from 'lucide-react-native';
 import { Stack } from 'expo-router';
@@ -22,11 +22,15 @@ export default function SubscriptionScreen() {
 
     setSelectedTier(priceId);
     try {
-      const clientSecret = await createSubscription(priceId);
-      // In a real app, you would now present the Stripe payment sheet
-      Alert.alert('Success', `Subscribed to ${tierName}! (Payment integration would happen here)`);
+      // Open Stripe payment link
+      const supported = await Linking.canOpenURL(priceId);
+      if (supported) {
+        await Linking.openURL(priceId);
+      } else {
+        Alert.alert('Error', 'Unable to open payment link');
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to create subscription. Please try again.');
+      Alert.alert('Error', 'Failed to open payment link. Please try again.');
     } finally {
       setSelectedTier(null);
     }
@@ -35,8 +39,8 @@ export default function SubscriptionScreen() {
   const getTierIcon = (tierId: string) => {
     switch (tierId) {
       case 'free': return <Zap color="#6b7280" size={24} />;
-      case 'starter': return <Star color="#f97316" size={24} />;
-      case 'pro': return <Crown color="#7c3aed" size={24} />;
+      case 'explorer': return <Star color="#f97316" size={24} />;
+      case 'adventurer': return <Crown color="#7c3aed" size={24} />;
       default: return <Zap color="#6b7280" size={24} />;
     }
   };
@@ -44,8 +48,8 @@ export default function SubscriptionScreen() {
   const getTierGradient = (tierId: string) => {
     switch (tierId) {
       case 'free': return ['#f3f4f6', '#e5e7eb'];
-      case 'starter': return ['#fed7aa', '#fdba74'];
-      case 'pro': return ['#ddd6fe', '#c4b5fd'];
+      case 'explorer': return ['#fed7aa', '#fdba74'];
+      case 'adventurer': return ['#ddd6fe', '#c4b5fd'];
       default: return ['#f3f4f6', '#e5e7eb'];
     }
   };
