@@ -31,7 +31,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles
 
 -- More permissive insert policy for registration
 CREATE POLICY "Users can insert own profile" ON public.profiles
-  FOR INSERT WITH CHECK (auth.uid() = id OR auth.uid() IS NULL);
+  FOR INSERT WITH CHECK (true);
 
 -- Create travel_plans table for storing AI-generated plans (with IF NOT EXISTS)
 CREATE TABLE IF NOT EXISTS public.travel_plans (
@@ -306,3 +306,4 @@ $;
 -- Grant execute permission on the function
 GRANT EXECUTE ON FUNCTION public.create_user_profile(UUID, TEXT, TEXT, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.create_user_profile(UUID, TEXT, TEXT, TEXT) TO anon;
+GRANT EXECUTE ON FUNCTION public.create_user_profile(UUID, TEXT, TEXT, TEXT) TO service_role;
