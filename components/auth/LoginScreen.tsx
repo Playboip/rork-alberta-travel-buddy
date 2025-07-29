@@ -36,6 +36,10 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
           'Please check your email and click the confirmation link to activate your account before signing in.\n\nYou can resend the confirmation email using the button below.',
           [{ text: 'OK', style: 'default' }]
         );
+      } else if (errorMessage.includes('If you recently registered')) {
+        // Show resend button for potential unconfirmed email cases
+        setShowResendButton(true);
+        Alert.alert('Login Failed', errorMessage);
       } else {
         Alert.alert('Login Failed', errorMessage);
       }

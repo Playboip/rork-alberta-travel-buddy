@@ -110,12 +110,22 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       if (error) {
         console.error('Login error:', error);
+        console.log('Error details:', {
+          message: error.message,
+          status: error.status,
+          name: error.name
+        });
         
         // Handle specific error cases
-        if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
+        if (error.message.includes('Email not confirmed') || 
+            error.message.includes('email_not_confirmed') ||
+            error.message.includes('signup_disabled')) {
           throw new Error('UNCONFIRMED_EMAIL');
-        } else if (error.message.includes('Invalid login credentials') || error.message.includes('invalid_credentials')) {
-          throw new Error('Invalid email or password. Please check your credentials and try again.');
+        } else if (error.message.includes('Invalid login credentials') || 
+                   error.message.includes('invalid_credentials') ||
+                   error.status === 400) {
+          // For invalid credentials, suggest checking email confirmation
+          throw new Error('Invalid email or password. If you recently registered, please check your email and confirm your account first.');
         } else if (error.message.includes('Too many requests')) {
           throw new Error('Too many login attempts. Please wait a moment and try again.');
         } else {
@@ -127,9 +137,9 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         throw new Error('Login failed. No user data received.');
       }
 
-      // Check if user has confirmed their email
+      // Double-check if user has confirmed their email
       if (!data.user.email_confirmed_at) {
-        console.log('User email not confirmed');
+        console.log('User email not confirmed, signing out');
         await supabase.auth.signOut(); // Sign out the unconfirmed user
         throw new Error('UNCONFIRMED_EMAIL');
       }
