@@ -4,9 +4,9 @@ import { useAuth } from '@/hooks/auth-context';
 import { supabase } from '@/lib/supabase';
 
 export default function TestAuth() {
-  const { user, session, isLoading, isAuthenticated, register, login } = useAuth();
+  const { user, session, isLoading, isAuthenticated, register, login, logout } = useAuth();
   const [testing, setTesting] = useState(false);
-  const [testEmail, setTestEmail] = useState('test@example.com');
+  const [testEmail, setTestEmail] = useState('test@albertatravelbuddy.com');
   const [testPassword, setTestPassword] = useState('testpass123');
   const [testName, setTestName] = useState('Test User');
   const [testLocation, setTestLocation] = useState('Calgary, AB');
@@ -72,6 +72,10 @@ export default function TestAuth() {
     
     try {
       addLog(`Attempting to register: ${testEmail}`);
+      addLog(`Password length: ${testPassword.length}`);
+      addLog(`Name: ${testName}`);
+      addLog(`Location: ${testLocation}`);
+      
       await register(testEmail, testPassword, testName, testLocation);
       addLog('Registration successful!');
       Alert.alert('Registration Test', 'Registration successful!');
@@ -89,12 +93,30 @@ export default function TestAuth() {
     
     try {
       addLog(`Attempting to login: ${testEmail}`);
+      addLog(`Password length: ${testPassword.length}`);
+      
       await login(testEmail, testPassword);
       addLog('Login successful!');
       Alert.alert('Login Test', 'Login successful!');
     } catch (error: any) {
       addLog(`Login failed: ${error.message}`);
       Alert.alert('Login Test Failed', error.message);
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const testLogout = async () => {
+    setTesting(true);
+    addLog('Starting logout test...');
+    
+    try {
+      await logout();
+      addLog('Logout successful!');
+      Alert.alert('Logout Test', 'Logout successful!');
+    } catch (error: any) {
+      addLog(`Logout failed: ${error.message}`);
+      Alert.alert('Logout Test Failed', error.message);
     } finally {
       setTesting(false);
     }
@@ -180,6 +202,18 @@ export default function TestAuth() {
           {testing ? 'Testing...' : 'Test Login'}
         </Text>
       </TouchableOpacity>
+
+      {isAuthenticated && (
+        <TouchableOpacity 
+          style={[styles.testButton, styles.logoutButton]} 
+          onPress={testLogout}
+          disabled={testing}
+        >
+          <Text style={styles.testButtonText}>
+            {testing ? 'Testing...' : 'Test Logout'}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Logs Section */}
       <View style={styles.logsContainer}>
@@ -302,5 +336,8 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#ef4444',
   },
 });

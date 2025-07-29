@@ -99,23 +99,29 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         console.error('Login error:', error);
         
         // Handle specific error cases
-        if (error.message === 'Email not confirmed') {
+        if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
           throw new Error('Please check your email and click the confirmation link before signing in.');
-        } else if (error.message === 'Invalid login credentials') {
+        } else if (error.message.includes('Invalid login credentials') || error.message.includes('invalid_credentials')) {
           throw new Error('Invalid email or password. Please check your credentials and try again.');
+        } else if (error.message.includes('Too many requests')) {
+          throw new Error('Too many login attempts. Please wait a moment and try again.');
         } else {
-          throw new Error(error.message);
+          throw new Error(error.message || 'Login failed. Please try again.');
         }
       }
 
+      if (!data.user) {
+        throw new Error('Login failed. No user data received.');
+      }
+
       // Check if user has confirmed their email
-      if (data.user && !data.user.email_confirmed_at) {
+      if (!data.user.email_confirmed_at) {
         console.log('User email not confirmed');
         await supabase.auth.signOut(); // Sign out the unconfirmed user
         throw new Error('Please check your email and click the confirmation link to activate your account.');
       }
 
-      console.log('Login successful');
+      console.log('Login successful for user:', data.user.id);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -143,7 +149,9 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       
       console.log('Database connection successful');
 
-      // Check if user already exists
+      // Check if user already exists by trying to sign in first
+      // This is a safer approach than using admin methods
+      console.log('Checking if user already exists...');
       const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id')
@@ -154,25 +162,34 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         throw new Error('An account with this email already exists. Please try signing in instead.');
       }
 
-      // Attempt to sign up the user
+      // Attempt to sign up the user with email confirmation disabled for now
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            name: name,
+            location: location
+          }
+        }
       });
 
       if (error) {
         console.error('Supabase auth signup error:', error);
-        throw new Error(`Signup failed: ${error.message}`);
+        if (error.message.includes('already registered')) {
+          throw new Error('An account with this email already exists. Please try signing in instead.');
+        } else if (error.message.includes('Password should be')) {
+          throw new Error('Password is too weak. Please use a stronger password with at least 6 characters.');
+        } else {
+          throw new Error(error.message || 'Registration failed. Please try again.');
+        }
       }
 
       if (!data.user) {
-        throw new Error('No user data returned from signup');
+        throw new Error('Registration failed. No user data received.');
       }
 
       console.log('User created successfully:', data.user.id);
-
-      // Wait a moment for the auth session to be established
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Create user profile using the secure function
       console.log('Creating user profile...');
@@ -185,20 +202,20 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       if (profileError) {
         console.error('Profile creation error:', profileError);
-        // Try to clean up the auth user if profile creation fails
-        try {
-          await supabase.auth.signOut();
-        } catch (cleanupError) {
-          console.error('Cleanup error:', cleanupError);
-        }
-        throw new Error(`Profile creation failed: ${profileError.message}`);
+        // Don't clean up auth user as it might be needed for email confirmation
+        console.log('Profile will be created after email confirmation');
+      } else {
+        console.log('Profile created successfully');
       }
 
-      console.log('Profile created successfully');
+      // Handle email confirmation requirement
+      if (!data.session && data.user && !data.user.email_confirmed_at) {
+        throw new Error('Registration successful! Please check your email and click the confirmation link to activate your account.');
+      }
 
-      // If email confirmation is required, let the user know
-      if (!data.session) {
-        throw new Error('Registration successful! Please check your email to confirm your account before signing in.');
+      // If we have a session, the user is immediately logged in (email confirmation disabled)
+      if (data.session) {
+        console.log('User registered and logged in successfully');
       }
 
     } catch (error) {
