@@ -155,11 +155,16 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
       
       // Check if email confirmation is required
       if (result?.requiresEmailConfirmation) {
+        const message = result?.emailDelayed 
+          ? 'Your account has been created successfully! Due to temporary email service restrictions, confirmation emails may be delayed. You can try logging in after a few minutes, or wait for the confirmation email to arrive.'
+          : 'Your account has been created successfully. Please check your email and click the confirmation link to activate your account before signing in.';
+        
         Alert.alert(
           'Registration Successful!', 
-          'Your account has been created successfully. Please check your email and click the confirmation link to activate your account before signing in.',
+          message,
           [
-            { text: 'OK', onPress: () => onSwitchToLogin() }
+            { text: 'Try Login Now', onPress: () => onSwitchToLogin() },
+            { text: 'OK', style: 'cancel' }
           ]
         );
         return;

@@ -29,11 +29,11 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
       const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
       
       // Handle email confirmation error specifically
-      if (errorMessage === 'UNCONFIRMED_EMAIL') {
+      if (errorMessage === 'UNCONFIRMED_EMAIL_DELAYED') {
         setShowResendButton(true);
         Alert.alert(
-          'Email Confirmation Required', 
-          'Please check your email and click the confirmation link to activate your account before signing in.\n\nYou can resend the confirmation email using the button below.',
+          'Email Confirmation Delayed', 
+          'Due to temporary email service restrictions, confirmation emails may be delayed. Your account may already be active - try logging in again in a few minutes.\n\nYou can also try resending the confirmation email using the button below.',
           [{ text: 'OK', style: 'default' }]
         );
       } else if (errorMessage.includes('If you recently registered')) {
@@ -139,7 +139,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
               testID="resend-confirmation-button"
             >
               <Text style={styles.resendButtonText}>
-                Resend Confirmation Email
+                Resend Confirmation Email (May Be Delayed)
               </Text>
             </TouchableOpacity>
           )}

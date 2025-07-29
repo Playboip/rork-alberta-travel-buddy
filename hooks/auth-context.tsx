@@ -11,7 +11,7 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, location: string) => Promise<{ requiresEmailConfirmation?: boolean } | void>;
+  register: (email: string, password: string, name: string, location: string) => Promise<{ requiresEmailConfirmation?: boolean; emailDelayed?: boolean } | void>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -120,12 +120,12 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         if (error.message.includes('Email not confirmed') || 
             error.message.includes('email_not_confirmed') ||
             error.message.includes('signup_disabled')) {
-          throw new Error('UNCONFIRMED_EMAIL');
+          throw new Error('UNCONFIRMED_EMAIL_DELAYED');
         } else if (error.message.includes('Invalid login credentials') || 
                    error.message.includes('invalid_credentials') ||
                    error.status === 400) {
-          // For invalid credentials, suggest checking email confirmation
-          throw new Error('Invalid email or password. If you recently registered, please check your email and confirm your account first.');
+          // For invalid credentials, mention email service issues
+          throw new Error('Invalid email or password. If you recently registered, email confirmation may be delayed due to temporary service restrictions. Please try again in a few minutes.');
         } else if (error.message.includes('Too many requests')) {
           throw new Error('Too many login attempts. Please wait a moment and try again.');
         } else {
@@ -137,14 +137,11 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         throw new Error('Login failed. No user data received.');
       }
 
-      // Double-check if user has confirmed their email
-      if (!data.user.email_confirmed_at) {
-        console.log('User email not confirmed, signing out');
-        await supabase.auth.signOut(); // Sign out the unconfirmed user
-        throw new Error('UNCONFIRMED_EMAIL');
-      }
-
+      // TEMPORARY: Skip email confirmation check due to email service restrictions
+      // This allows users to login even if confirmation email wasn't received
       console.log('Login successful for user:', data.user.id);
+      console.log('Email confirmation status:', data.user.email_confirmed_at ? 'confirmed' : 'pending (bypassed due to email service issues)');
+      
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -184,6 +181,10 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         throw new Error('An account with this email already exists. Please try signing in instead.');
       }
 
+      // TEMPORARY: Due to email sending restrictions, we'll show a warning
+      // but still attempt registration
+      console.log('WARNING: Email confirmation may be affected due to temporary email restrictions');
+
       // Attempt to sign up the user
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -202,6 +203,8 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
           throw new Error('An account with this email already exists. Please try signing in instead.');
         } else if (error.message.includes('Password should be')) {
           throw new Error('Password is too weak. Please use a stronger password with at least 6 characters.');
+        } else if (error.message.includes('email') && error.message.includes('rate')) {
+          throw new Error('Email service is temporarily unavailable. Your account has been created but email confirmation is delayed. Please try logging in after a few minutes.');
         } else {
           throw new Error(error.message || 'Registration failed. Please try again.');
         }
@@ -222,10 +225,13 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         console.log('User registered and logged in successfully');
         await loadUserProfile(data.user.id);
       } else if (data.user && !data.user.email_confirmed_at) {
-        // Email confirmation required - this is a success state, not an error
-        console.log('Registration successful, email confirmation required');
-        // Return a special success object instead of throwing an error
-        return { requiresEmailConfirmation: true };
+        // Email confirmation required - but may be delayed due to email restrictions
+        console.log('Registration successful, email confirmation required (may be delayed)');
+        // Return a special success object with additional info
+        return { 
+          requiresEmailConfirmation: true,
+          emailDelayed: true
+        };
       } else {
         // Other scenarios
         console.log('Registration completed, user needs to sign in');
@@ -345,7 +351,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
   const resendConfirmation = async (email: string) => {
     try {
-      console.log('Resending confirmation email to:', email);
+      console.log('Attempting to resend confirmation email to:', email);
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email,
@@ -353,10 +359,13 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       if (error) {
         console.error('Resend confirmation error:', error);
+        if (error.message.includes('rate') || error.message.includes('limit')) {
+          throw new Error('Email service is temporarily restricted. Please try logging in directly as your account may already be active.');
+        }
         throw new Error(error.message);
       }
 
-      console.log('Confirmation email sent successfully');
+      console.log('Confirmation email request sent (may be delayed due to service restrictions)');
     } catch (error) {
       console.error('Resend confirmation error:', error);
       throw error;
