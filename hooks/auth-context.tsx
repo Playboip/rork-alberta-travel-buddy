@@ -229,42 +229,54 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
   };
 
   const createUserProfile = async (userId: string, email: string, name: string, location: string) => {
-    console.log('Creating user profile...');
+    console.log('Creating user profile for user:', userId);
     
-    // Try RPC function first
-    const { error: rpcError } = await supabase.rpc('create_user_profile', {
-      p_user_id: userId,
-      p_email: email,
-      p_name: name,
-      p_location: location
-    });
-
-    if (!rpcError) {
-      console.log('Profile created successfully via RPC');
-      return;
-    }
-
-    console.error('RPC function failed:', rpcError);
-    console.log('Attempting direct profile creation...');
-    
-    // Fallback to direct insert
-    const { error: insertError } = await supabase
-      .from('profiles')
-      .insert({
-        id: userId,
-        email: email,
-        name: name,
-        location: location,
-        subscription_tier: 'free',
-        subscription_status: 'active'
+    try {
+      // Try RPC function first
+      console.log('Attempting RPC function call...');
+      const { error: rpcError } = await supabase.rpc('create_user_profile', {
+        p_user_id: userId,
+        p_email: email,
+        p_name: name,
+        p_location: location
       });
-    
-    if (insertError) {
-      console.error('Direct profile creation failed:', insertError);
-      // Don't throw error - profile can be created later via auth state change
-      console.log('Profile creation failed, will retry on next login');
-    } else {
-      console.log('Profile created successfully via direct insert');
+
+      if (!rpcError) {
+        console.log('Profile created successfully via RPC');
+        return;
+      }
+
+      console.error('RPC function failed:', rpcError);
+      console.log('Attempting direct profile creation...');
+      
+      // Fallback to direct insert with upsert
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: userId,
+          email: email,
+          name: name,
+          location: location,
+          subscription_tier: 'free',
+          subscription_status: 'active'
+        }, {
+          onConflict: 'id'
+        });
+      
+      if (insertError) {
+        console.error('Direct profile creation failed:', insertError);
+        // Don't throw error for duplicate key - profile already exists
+        if (insertError.code === '23505') {
+          console.log('Profile already exists, skipping creation');
+          return;
+        }
+        console.log('Profile creation failed, will retry on next login');
+      } else {
+        console.log('Profile created successfully via direct insert');
+      }
+    } catch (error) {
+      console.error('Error in createUserProfile:', error);
+      // Don't throw - allow registration to continue
     }
   };
 

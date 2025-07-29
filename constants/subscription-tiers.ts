@@ -1,8 +1,20 @@
-import { SubscriptionTier } from '@/types/user';
+export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'explorer' | 'adventurer';
 
-export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
+export interface SubscriptionTierInfo {
+  id: SubscriptionTier;
+  name: string;
+  price: number;
+  interval: 'month';
+  features: string[];
+  stripePriceId: string;
+  popular?: boolean;
+  gradient: readonly [string, string, ...string[]];
+}
+
+export const SUBSCRIPTION_TIERS: SubscriptionTierInfo[] = [
   {
-    id: 'free',
+    id: 'free' as const,
+    gradient: ['#f3f4f6', '#e5e7eb'] as const,
     name: 'Free Explorer',
     price: 0,
     interval: 'month',
@@ -16,7 +28,8 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     ]
   },
   {
-    id: 'explorer',
+    id: 'explorer' as const,
+    gradient: ['#fed7aa', '#fdba74'] as const,
     name: 'Alberta Travel Buddy Explorer',
     price: 4.99,
     interval: 'month',
@@ -33,7 +46,8 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     ]
   },
   {
-    id: 'adventurer',
+    id: 'adventurer' as const,
+    gradient: ['#ddd6fe', '#c4b5fd'] as const,
     name: 'Alberta Travel Buddy Adventurer',
     price: 9.99,
     interval: 'month',

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   name TEXT NOT NULL,
   location TEXT NOT NULL,
   emergency_contact TEXT,
-  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'explorer', 'adventurer')),
+  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'starter', 'pro', 'explorer', 'adventurer')),
   subscription_status TEXT DEFAULT 'active' CHECK (subscription_status IN ('active', 'canceled', 'past_due', 'trialing')),
   subscription_id TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -281,7 +281,7 @@ END;
 $$;
 
 -- Function to create user profile (with elevated privileges and upsert logic)
-CREATE OR REPLACE FUNCTION create_user_profile(
+CREATE OR REPLACE FUNCTION public.create_user_profile(
   p_user_id UUID,
   p_email TEXT,
   p_name TEXT,
@@ -290,7 +290,7 @@ CREATE OR REPLACE FUNCTION create_user_profile(
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $
 BEGIN
   -- Use INSERT ... ON CONFLICT to handle existing profiles
   INSERT INTO public.profiles (id, email, name, location, subscription_tier, subscription_status, created_at)
@@ -298,6 +298,11 @@ BEGIN
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     name = EXCLUDED.name,
-    location = EXCLUDED.location;
+    location = EXCLUDED.location,
+    created_at = COALESCE(public.profiles.created_at, NOW());
 END;
-$$;
+$;
+
+-- Grant execute permission on the function
+GRANT EXECUTE ON FUNCTION public.create_user_profile(UUID, TEXT, TEXT, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.create_user_profile(UUID, TEXT, TEXT, TEXT) TO anon;

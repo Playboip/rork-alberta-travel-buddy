@@ -5,7 +5,7 @@ import { Check, Crown, Star, Zap } from 'lucide-react-native';
 import { Stack } from 'expo-router';
 import { useAuth } from '@/hooks/auth-context';
 import { useSubscription } from '@/hooks/subscription-context';
-import { SUBSCRIPTION_TIERS } from '@/constants/subscription-tiers';
+import { SUBSCRIPTION_TIERS, SubscriptionTierInfo } from '@/constants/subscription-tiers';
 
 export default function SubscriptionScreen() {
   const { user } = useAuth();
@@ -74,7 +74,7 @@ export default function SubscriptionScreen() {
               )}
               
               <LinearGradient
-                colors={getTierGradient(tier.id)}
+                colors={tier.gradient}
                 style={styles.tierGradient}
               >
                 <View style={styles.tierHeader}>
