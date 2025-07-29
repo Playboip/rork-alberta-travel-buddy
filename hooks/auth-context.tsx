@@ -100,7 +100,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         
         // Handle specific error cases
         if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
-          throw new Error('Please check your email and click the confirmation link before signing in.');
+          throw new Error('UNCONFIRMED_EMAIL');
         } else if (error.message.includes('Invalid login credentials') || error.message.includes('invalid_credentials')) {
           throw new Error('Invalid email or password. Please check your credentials and try again.');
         } else if (error.message.includes('Too many requests')) {
@@ -118,7 +118,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       if (!data.user.email_confirmed_at) {
         console.log('User email not confirmed');
         await supabase.auth.signOut(); // Sign out the unconfirmed user
-        throw new Error('Please check your email and click the confirmation link to activate your account.');
+        throw new Error('UNCONFIRMED_EMAIL');
       }
 
       console.log('Login successful for user:', data.user.id);
@@ -210,7 +210,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       // Handle email confirmation requirement
       if (!data.session && data.user && !data.user.email_confirmed_at) {
-        throw new Error('Registration successful! Please check your email and click the confirmation link to activate your account.');
+        throw new Error('REGISTRATION_SUCCESS_CONFIRM_EMAIL');
       }
 
       // If we have a session, the user is immediately logged in (email confirmation disabled)

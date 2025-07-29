@@ -158,13 +158,22 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
       
       let errorMessage = 'Registration failed. Please try again.';
       
+      if (error.message === 'REGISTRATION_SUCCESS_CONFIRM_EMAIL') {
+        Alert.alert(
+          'Registration Successful!', 
+          'Your account has been created successfully. Please check your email and click the confirmation link to activate your account before signing in.',
+          [
+            { text: 'OK', onPress: () => onSwitchToLogin() }
+          ]
+        );
+        return;
+      }
+      
       if (error.message) {
         if (error.message.includes('email') || error.message.includes('already registered')) {
           errorMessage = 'This email is already registered. Please use a different email or try signing in.';
         } else if (error.message.includes('password')) {
           errorMessage = 'Password is too weak. Please use a stronger password.';
-        } else if (error.message.includes('confirm')) {
-          errorMessage = error.message;
         } else if (error.message.includes('Database connection')) {
           errorMessage = 'Unable to connect to our servers. Please check your internet connection and try again.';
         } else if (error.message.includes('duplicate key') || error.message.includes('already exists')) {
@@ -190,7 +199,7 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <MapPin color="#ffffff" size={48} />
-            <Text style={styles.title}>Join Alberta Travel</Text>
+            <Text style={styles.title}>Join Alberta Travel Buddy</Text>
             <Text style={styles.subtitle}>Start your adventure today</Text>
           </View>
 

@@ -28,12 +28,12 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
       console.log('Login error caught:', error);
       const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
       
-      // Show appropriate alert based on error type
-      if (errorMessage.includes('confirmation link') || errorMessage.includes('activate your account')) {
+      // Handle email confirmation error specifically
+      if (errorMessage === 'UNCONFIRMED_EMAIL') {
         setShowResendButton(true);
         Alert.alert(
           'Email Confirmation Required', 
-          errorMessage + '\n\nYou can resend the confirmation email using the button below.',
+          'Please check your email and click the confirmation link to activate your account before signing in.\n\nYou can resend the confirmation email using the button below.',
           [{ text: 'OK', style: 'default' }]
         );
       } else {
@@ -73,7 +73,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
       >
         <View style={styles.header}>
           <MapPin color="#ffffff" size={48} />
-          <Text style={styles.title}>Alberta Travel</Text>
+          <Text style={styles.title}>Alberta Travel Buddy</Text>
           <Text style={styles.subtitle}>Your intelligent travel companion</Text>
         </View>
 
