@@ -74,7 +74,7 @@ export default function SubscriptionScreen() {
               )}
               
               <LinearGradient
-                colors={tier.gradient}
+                colors={getTierGradient(tier.id)}
                 style={styles.tierGradient}
               >
                 <View style={styles.tierHeader}>
