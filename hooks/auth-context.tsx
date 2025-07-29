@@ -50,7 +50,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadUserProfile = async (userId: string) => {
+  const loadUserProfile = async (userId: string, retryCount = 0) => {
     try {
       console.log('Loading profile for user:', userId);
       const { data, error } = await supabase
@@ -61,9 +61,22 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       if (error) {
         console.error('Error loading user profile:', error);
-        if (error.code === 'PGRST116') {
-          // Profile doesn't exist, this might be a new user
-          console.log('Profile not found, user might need to complete registration');
+        if (error.code === 'PGRST116' && retryCount === 0) {
+          // Profile doesn't exist, try to get user info from auth and create profile
+          console.log('Profile not found, attempting to create from auth data');
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user && user.id === userId) {
+            const userData = user.user_metadata;
+            await createUserProfile(
+              userId,
+              user.email || '',
+              userData?.name || 'User',
+              userData?.location || 'Unknown'
+            );
+            // Retry loading the profile once
+            await loadUserProfile(userId, 1);
+            return;
+          }
         }
       } else if (data) {
         console.log('Profile loaded:', data);
@@ -149,8 +162,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       
       console.log('Database connection successful');
 
-      // Check if user already exists by trying to sign in first
-      // This is a safer approach than using admin methods
+      // Check if user already exists
       console.log('Checking if user already exists...');
       const { data: existingProfile } = await supabase
         .from('profiles')
@@ -162,7 +174,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         throw new Error('An account with this email already exists. Please try signing in instead.');
       }
 
-      // Attempt to sign up the user with email confirmation disabled for now
+      // Attempt to sign up the user
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -191,31 +203,21 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       console.log('User created successfully:', data.user.id);
 
-      // Create user profile using the secure function
-      console.log('Creating user profile...');
-      const { error: profileError } = await supabase.rpc('create_user_profile', {
-        p_user_id: data.user.id,
-        p_email: email,
-        p_name: name,
-        p_location: location
-      });
+      // Create user profile - try multiple approaches
+      await createUserProfile(data.user.id, email, name, location);
 
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
-        // Don't clean up auth user as it might be needed for email confirmation
-        console.log('Profile will be created after email confirmation');
-      } else {
-        console.log('Profile created successfully');
-      }
-
-      // Handle email confirmation requirement
-      if (!data.session && data.user && !data.user.email_confirmed_at) {
-        throw new Error('REGISTRATION_SUCCESS_CONFIRM_EMAIL');
-      }
-
-      // If we have a session, the user is immediately logged in (email confirmation disabled)
+      // Handle different registration scenarios
       if (data.session) {
+        // User is immediately logged in (email confirmation disabled)
         console.log('User registered and logged in successfully');
+        await loadUserProfile(data.user.id);
+      } else if (data.user && !data.user.email_confirmed_at) {
+        // Email confirmation required
+        console.log('Registration successful, email confirmation required');
+        throw new Error('REGISTRATION_SUCCESS_CONFIRM_EMAIL');
+      } else {
+        // Other scenarios
+        console.log('Registration completed, user needs to sign in');
       }
 
     } catch (error) {
@@ -223,6 +225,46 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       throw error;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const createUserProfile = async (userId: string, email: string, name: string, location: string) => {
+    console.log('Creating user profile...');
+    
+    // Try RPC function first
+    const { error: rpcError } = await supabase.rpc('create_user_profile', {
+      p_user_id: userId,
+      p_email: email,
+      p_name: name,
+      p_location: location
+    });
+
+    if (!rpcError) {
+      console.log('Profile created successfully via RPC');
+      return;
+    }
+
+    console.error('RPC function failed:', rpcError);
+    console.log('Attempting direct profile creation...');
+    
+    // Fallback to direct insert
+    const { error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: userId,
+        email: email,
+        name: name,
+        location: location,
+        subscription_tier: 'free',
+        subscription_status: 'active'
+      });
+    
+    if (insertError) {
+      console.error('Direct profile creation failed:', insertError);
+      // Don't throw error - profile can be created later via auth state change
+      console.log('Profile creation failed, will retry on next login');
+    } else {
+      console.log('Profile created successfully via direct insert');
     }
   };
 

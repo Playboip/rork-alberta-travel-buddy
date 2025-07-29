@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   name TEXT NOT NULL,
   location TEXT NOT NULL,
   emergency_contact TEXT,
-  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'starter', 'pro')),
+  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'explorer', 'adventurer')),
   subscription_status TEXT DEFAULT 'active' CHECK (subscription_status IN ('active', 'canceled', 'past_due', 'trialing')),
   subscription_id TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

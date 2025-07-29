@@ -45,12 +45,12 @@ export default function SubscriptionScreen() {
     }
   };
 
-  const getTierGradient = (tierId: string): [string, string] => {
+  const getTierGradient = (tierId: string) => {
     switch (tierId) {
-      case 'free': return ['#f3f4f6', '#e5e7eb'];
-      case 'explorer': return ['#fed7aa', '#fdba74'];
-      case 'adventurer': return ['#ddd6fe', '#c4b5fd'];
-      default: return ['#f3f4f6', '#e5e7eb'];
+      case 'free': return ['#f3f4f6', '#e5e7eb'] as const;
+      case 'explorer': return ['#fed7aa', '#fdba74'] as const;
+      case 'adventurer': return ['#ddd6fe', '#c4b5fd'] as const;
+      default: return ['#f3f4f6', '#e5e7eb'] as const;
     }
   };
 
