@@ -11,7 +11,7 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, location: string) => Promise<void>;
+  register: (email: string, password: string, name: string, location: string) => Promise<{ requiresEmailConfirmation?: boolean } | void>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -222,9 +222,10 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         console.log('User registered and logged in successfully');
         await loadUserProfile(data.user.id);
       } else if (data.user && !data.user.email_confirmed_at) {
-        // Email confirmation required
+        // Email confirmation required - this is a success state, not an error
         console.log('Registration successful, email confirmation required');
-        throw new Error('REGISTRATION_SUCCESS_CONFIRM_EMAIL');
+        // Return a special success object instead of throwing an error
+        return { requiresEmailConfirmation: true };
       } else {
         // Other scenarios
         console.log('Registration completed, user needs to sign in');

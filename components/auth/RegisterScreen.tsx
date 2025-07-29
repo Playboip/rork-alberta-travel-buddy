@@ -151,14 +151,10 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
 
     try {
       console.log('Starting registration process...');
-      await register(email.trim(), password, name.trim(), detectedLocation.trim());
-      Alert.alert('Success', 'Account created successfully!');
-    } catch (error: any) {
-      console.error('Registration failed:', error);
+      const result = await register(email.trim(), password, name.trim(), detectedLocation.trim());
       
-      let errorMessage = 'Registration failed. Please try again.';
-      
-      if (error.message === 'REGISTRATION_SUCCESS_CONFIRM_EMAIL') {
+      // Check if email confirmation is required
+      if (result?.requiresEmailConfirmation) {
         Alert.alert(
           'Registration Successful!', 
           'Your account has been created successfully. Please check your email and click the confirmation link to activate your account before signing in.',
@@ -168,6 +164,13 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
         );
         return;
       }
+      
+      // If we get here, registration was successful and user is logged in
+      Alert.alert('Success', 'Account created successfully!');
+    } catch (error: any) {
+      console.error('Registration failed:', error);
+      
+      let errorMessage = 'Registration failed. Please try again.';
       
       if (error.message) {
         if (error.message.includes('email') || error.message.includes('already registered')) {
