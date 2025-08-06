@@ -1,95 +1,41 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MapPin, Compass, Sparkles, Search, TrendingUp, Percent, Home, Car, Utensils } from 'lucide-react-native';
+import { MapPin, Compass, Sparkles, Search, TrendingUp, Percent, Home, Car, Utensils, Mountain, Waves, Eye, TreePine, Tent } from 'lucide-react-native';
 import { Stack, router } from 'expo-router';
 import { Image } from 'expo-image';
 import DiscountBanner from '@/components/shared/DiscountBanner';
 import Logo from '@/components/shared/Logo';
+import { ALL_ALBERTA_ATTRACTIONS, getAttractionsByCategory, getHiddenGems, searchAttractions, AlbertaAttraction } from '@/constants/alberta-attractions';
 
-interface Destination {
-  id: string;
-  name: string;
-  location: string;
-  description: string;
-  category: string;
-  image: string;
-  rating: number;
-}
-
-const featuredDestinations: Destination[] = [
-  {
-    id: '1',
-    name: 'Banff National Park',
-    location: '1.5 hours from Calgary',
-    description: 'Stunning mountain landscapes and pristine lakes',
-    category: 'Nature',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
-    rating: 4.9
-  },
-  {
-    id: '2',
-    name: 'Jasper National Park',
-    location: '4 hours from Edmonton',
-    description: 'Dark sky preserve with incredible wildlife',
-    category: 'Nature',
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
-    rating: 4.8
-  },
-  {
-    id: '3',
-    name: 'Lake Louise',
-    location: '2 hours from Calgary',
-    description: 'Iconic turquoise lake surrounded by peaks',
-    category: 'Nature',
-    image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop',
-    rating: 4.9
-  }
-];
+const featuredDestinations = ALL_ALBERTA_ATTRACTIONS.slice(0, 6);
 
 const trendingCategories = [
-  { name: 'Mountain Adventures', icon: '🏔️', count: 24 },
-  { name: 'City Escapes', icon: '🏙️', count: 18 },
-  { name: 'Winter Sports', icon: '⛷️', count: 15 },
-  { name: 'Cultural Sites', icon: '🏛️', count: 12 }
+  { name: 'Hiking Trails', icon: Mountain, count: getAttractionsByCategory('hiking').length, category: 'hiking' },
+  { name: 'Hot Springs', icon: Waves, count: getAttractionsByCategory('hotspring').length, category: 'hotspring' },
+  { name: 'Hidden Gems', icon: Eye, count: getHiddenGems().length, category: 'hidden-gem' },
+  { name: 'Cycling Routes', icon: TreePine, count: getAttractionsByCategory('cycling').length, category: 'cycling' },
+  { name: 'Camping', icon: Tent, count: getAttractionsByCategory('camping').length, category: 'camping' },
+  { name: 'Food & Dining', icon: Utensils, count: getAttractionsByCategory('food').length, category: 'food' }
 ];
 
 const nearbyPlaces = [
-  { name: 'Calgary Tower', distance: '2 km', type: 'Landmark' },
-  { name: 'Prince\'s Island Park', distance: '3 km', type: 'Park' },
-  { name: 'Heritage Park', distance: '8 km', type: 'Historical' },
-  { name: 'Canada Olympic Park', distance: '12 km', type: 'Sports' },
-  { name: 'Fish Creek Park', distance: '15 km', type: 'Nature' }
+  { name: 'Bow River Pathway', distance: 'Downtown Calgary', type: 'Cycling' },
+  { name: 'Prince\'s Island Park', distance: '3 km', type: 'Walking' },
+  { name: 'Fish Creek Park', distance: '15 km', type: 'Nature' },
+  { name: 'Kananaskis Country', distance: '1 hour', type: 'Hiking' },
+  { name: 'Canmore', distance: '1.5 hours', type: 'Mountain Town' }
 ];
 
 const trendingDestinations = [
-  { name: 'Moraine Lake', popularity: '95%', category: 'Nature' },
-  { name: 'Columbia Icefield', popularity: '88%', category: 'Adventure' },
-  { name: 'Waterton Lakes', popularity: '82%', category: 'Nature' },
-  { name: 'Drumheller Badlands', popularity: '76%', category: 'Geological' }
+  { name: 'Abraham Lake (Bubble Lake)', popularity: '95%', category: 'Hidden Gem' },
+  { name: 'Miette Hot Springs', popularity: '88%', category: 'Hot Springs' },
+  { name: 'Writing-on-Stone Park', popularity: '82%', category: 'Cultural' },
+  { name: 'Iceline Trail', popularity: '76%', category: 'Hiking' }
 ];
 
-const categoryDestinations: { [key: string]: any[] } = {
-  'Mountain Adventures': [
-    { name: 'Mount Assiniboine', difficulty: 'Expert', season: 'Summer' },
-    { name: 'Kananaskis Country', difficulty: 'Intermediate', season: 'All Year' },
-    { name: 'Mount Rundle', difficulty: 'Advanced', season: 'Summer' }
-  ],
-  'City Escapes': [
-    { name: 'Edmonton River Valley', type: 'Urban Nature', duration: '1 day' },
-    { name: 'Calgary Stampede', type: 'Festival', duration: '10 days' },
-    { name: 'Red Deer Discovery Canyon', type: 'Urban Adventure', duration: 'Half day' }
-  ],
-  'Winter Sports': [
-    { name: 'Lake Louise Ski Resort', type: 'Skiing', season: 'Nov-May' },
-    { name: 'Marmot Basin', type: 'Skiing', season: 'Nov-Apr' },
-    { name: 'Nakiska Ski Area', type: 'Skiing', season: 'Dec-Apr' }
-  ],
-  'Cultural Sites': [
-    { name: 'Head-Smashed-In Buffalo Jump', type: 'UNESCO Site', era: 'Ancient' },
-    { name: 'Ukrainian Cultural Heritage Village', type: 'Living History', era: '1890s-1930s' },
-    { name: 'Royal Tyrrell Museum', type: 'Paleontology', era: 'Prehistoric' }
-  ]
+const getCategoryDestinations = (category: string) => {
+  return getAttractionsByCategory(category);
 };
 
 export default function DiscoverScreen() {
@@ -130,49 +76,57 @@ export default function DiscoverScreen() {
   };
 
   const handleCategoryPress = (category: any) => {
-    const destinations = categoryDestinations[category.name] || [];
-    const destList = destinations.map(dest => {
-      if (category.name === 'Mountain Adventures') {
-        return `• ${dest.name} - ${dest.difficulty} (${dest.season})`;
-      } else if (category.name === 'City Escapes') {
-        return `• ${dest.name} - ${dest.type} (${dest.duration})`;
-      } else if (category.name === 'Winter Sports') {
-        return `• ${dest.name} - ${dest.type} (${dest.season})`;
-      } else if (category.name === 'Cultural Sites') {
-        return `• ${dest.name} - ${dest.type} (${dest.era})`;
-      }
-      return `• ${dest.name}`;
-    }).join('\n');
+    const destinations = getCategoryDestinations(category.category);
+    const destList = destinations.slice(0, 5).map(dest => {
+      const difficultyText = dest.difficulty ? ` - ${dest.difficulty}` : '';
+      const priceText = dest.priceRange !== 'free' ? ` (${dest.priceRange})` : ' (Free)';
+      return `• ${dest.name}${difficultyText}${priceText}\n  ${dest.location} - ${dest.season}`;
+    }).join('\n\n');
     
     Alert.alert(
       category.name,
-      `${category.count} places available:\n\n${destList}`,
+      `${category.count} amazing ${category.name.toLowerCase()} in Alberta:\n\n${destList}${destinations.length > 5 ? '\n\n...and more!' : ''}`,
       [
         { text: 'Close', style: 'cancel' },
-        { text: 'Plan Trip Here', onPress: () => router.push('/plan') }
+        { text: 'Explore All', onPress: () => router.push('/plan') }
       ]
     );
   };
 
-  const handleDestinationPress = (destination: Destination) => {
+  const handleDestinationPress = (destination: AlbertaAttraction) => {
+    const features = destination.features.slice(0, 3).join(', ');
+    const tips = destination.tips ? destination.tips.slice(0, 2).join('\n• ') : '';
+    
     Alert.alert(
       destination.name,
-      `${destination.description}
-
-Location: ${destination.location}
-Rating: ${destination.rating}/5`,
+      `${destination.description}\n\n📍 ${destination.location}\n⭐ ${destination.rating}/5 rating\n💰 ${destination.priceRange === 'free' ? 'Free' : destination.priceRange}\n🎯 ${features}${destination.duration ? `\n⏱️ ${destination.duration}` : ''}${tips ? `\n\n💡 Tips:\n• ${tips}` : ''}`,
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Plan Trip Here', onPress: () => router.push('/plan') }
+        { text: 'Close', style: 'cancel' },
+        { text: 'Add to Trip', onPress: () => router.push('/plan') }
       ]
     );
   };
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      Alert.alert('Search Results', `Searching for "${searchQuery}"...`);
+      const results = searchAttractions(searchQuery);
+      if (results.length > 0) {
+        const resultsList = results.slice(0, 5).map(result => 
+          `• ${result.name} - ${result.location} (${result.category})`
+        ).join('\n');
+        Alert.alert(
+          `Found ${results.length} results`,
+          `${resultsList}${results.length > 5 ? '\n\n...and more!' : ''}`,
+          [
+            { text: 'Close', style: 'cancel' },
+            { text: 'View All', onPress: () => router.push('/plan') }
+          ]
+        );
+      } else {
+        Alert.alert('No Results', `No attractions found for "${searchQuery}". Try searching for hiking, hot springs, or hidden gems!`);
+      }
     } else {
-      Alert.alert('Search', 'Please enter a destination to search');
+      Alert.alert('Search', 'Try searching for "hiking", "hot springs", "hidden gems", or any Alberta location!');
     }
   };
 
@@ -192,14 +146,14 @@ Rating: ${destination.rating}/5`,
           <View style={styles.headerContent}>
             <Logo size={80} style={styles.logo} />
             <Text style={styles.greeting}>Ready to explore?</Text>
-            <Text style={styles.subtitle}>Discover amazing destinations from Alberta</Text>
+            <Text style={styles.subtitle}>Discover Alberta&apos;s hidden gems, trails, hot springs & adventures</Text>
             
             {/* Search Bar */}
             <View style={styles.searchContainer}>
               <Search color="#6b7280" size={20} />
               <TextInput
                 style={styles.searchInput}
-                placeholder="Where do you want to go?"
+                placeholder="Search hiking trails, hot springs, hidden gems..."
                 placeholderTextColor="#6b7280"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -227,58 +181,62 @@ Rating: ${destination.rating}/5`,
             <Home color="#059669" size={24} />
             <Text style={styles.actionText}>Book</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={() => Alert.alert('Alberta Guide', `Browse all ${ALL_ALBERTA_ATTRACTIONS.length} Alberta attractions including:\n\n• ${getAttractionsByCategory('hiking').length} Hiking Trails\n• ${getAttractionsByCategory('hotspring').length} Hot Springs\n• ${getHiddenGems().length} Hidden Gems\n• ${getAttractionsByCategory('cycling').length} Cycling Routes\n• ${getAttractionsByCategory('food').length} Food & Dining\n• ${getAttractionsByCategory('accommodation').length} Accommodations\n\nUse the categories above to explore!`)}>
+            <Mountain color="#7c3aed" size={24} />
+            <Text style={styles.actionText}>Guide</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Featured Discount Banner */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🔥 Hot Deals</Text>
+          <Text style={styles.sectionTitle}>🔥 Alberta Adventure Deals</Text>
           <DiscountBanner 
             discount={{
-              percentage: 30,
-              code: 'FOODIE30',
-              validUntil: '2024-11-30',
-              description: 'Try local hidden gems with 30% off meal combos!',
+              percentage: 25,
+              code: 'ALBERTA25',
+              validUntil: '2024-12-31',
+              description: 'Discover Alberta&apos;s hidden gems with 25% off guided tours and experiences!',
               type: 'partner'
             }}
             onPress={() => router.push('/discounts')}
           />
         </View>
 
-        {/* Accommodation Types */}
+        {/* Alberta Accommodation Types */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Stay Your Way</Text>
+          <Text style={styles.sectionTitle}>Stay in Alberta</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
             <TouchableOpacity 
               style={styles.accommodationCard}
               onPress={() => router.push('/booking/search')}
             >
               <Home color="#1e40af" size={32} />
-              <Text style={styles.accommodationName}>Hotels</Text>
-              <Text style={styles.accommodationDesc}>Luxury & comfort</Text>
+              <Text style={styles.accommodationName}>Mountain Lodges</Text>
+              <Text style={styles.accommodationDesc}>Rockies luxury</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.accommodationCard}
               onPress={() => router.push('/booking/search')}
             >
-              <Text style={styles.accommodationIcon}>🏠</Text>
-              <Text style={styles.accommodationName}>Hostels</Text>
-              <Text style={styles.accommodationDesc}>Budget-friendly</Text>
+              <Text style={styles.accommodationIcon}>🏕️</Text>
+              <Text style={styles.accommodationName}>Campgrounds</Text>
+              <Text style={styles.accommodationDesc}>Under the stars</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.accommodationCard}
               onPress={() => router.push('/booking/search')}
             >
-              <Text style={styles.accommodationIcon}>🏢</Text>
-              <Text style={styles.accommodationName}>Apartments</Text>
-              <Text style={styles.accommodationDesc}>Home away from home</Text>
+              <Text style={styles.accommodationIcon}>🚐</Text>
+              <Text style={styles.accommodationName}>RV Parks</Text>
+              <Text style={styles.accommodationDesc}>Road trip ready</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.accommodationCard}
               onPress={() => router.push('/booking/search')}
             >
               <Text style={styles.accommodationIcon}>🏘️</Text>
-              <Text style={styles.accommodationName}>Cabins</Text>
-              <Text style={styles.accommodationDesc}>Nature retreats</Text>
+              <Text style={styles.accommodationName}>Ranch Stays</Text>
+              <Text style={styles.accommodationDesc}>Authentic Alberta</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -318,23 +276,26 @@ Rating: ${destination.rating}/5`,
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Popular Categories</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-            {trendingCategories.map((category, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={styles.categoryCard}
-                onPress={() => handleCategoryPress(category)}
-              >
-                <Text style={styles.categoryIcon}>{category.icon}</Text>
-                <Text style={styles.categoryName}>{category.name}</Text>
-                <Text style={styles.categoryCount}>{category.count} places</Text>
-              </TouchableOpacity>
-            ))}
+            {trendingCategories.map((category, index) => {
+              const IconComponent = category.icon;
+              return (
+                <TouchableOpacity 
+                  key={index} 
+                  style={styles.categoryCard}
+                  onPress={() => handleCategoryPress(category)}
+                >
+                  <IconComponent color="#1e40af" size={32} />
+                  <Text style={styles.categoryName}>{category.name}</Text>
+                  <Text style={styles.categoryCount}>{category.count} places</Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
-        {/* Featured Destinations */}
+        {/* Featured Alberta Attractions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Featured Destinations</Text>
+          <Text style={styles.sectionTitle}>Featured Alberta Attractions</Text>
           {featuredDestinations.map((destination) => (
             <TouchableOpacity 
               key={destination.id} 
@@ -381,8 +342,8 @@ Rating: ${destination.rating}/5`,
               style={styles.aiGradient}
             >
               <Sparkles color="#ffffff" size={28} />
-              <Text style={styles.aiTitle}>Get Personalized Recommendations</Text>
-              <Text style={styles.aiSubtitle}>Let our AI create the perfect trip based on your preferences</Text>
+              <Text style={styles.aiTitle}>Get Personalized Alberta Recommendations</Text>
+              <Text style={styles.aiSubtitle}>Let our AI create the perfect Alberta adventure based on your interests - hiking, hot springs, hidden gems & more</Text>
               <TouchableOpacity style={styles.aiButton} onPress={handleAIPlanner}>
                 <Text style={styles.aiButtonText}>Start Planning</Text>
               </TouchableOpacity>
@@ -450,7 +411,7 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 24,
   },
   actionButton: {
