@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 
@@ -206,6 +206,11 @@ export default function AlbertaGuideScreen() {
 
   const handleAttractionPress = (attraction: AlbertaAttraction) => {
     console.log('Selected attraction:', attraction.name);
+    try {
+      router.push(`/destination/${attraction.id}`);
+    } catch (e) {
+      console.error('Failed to navigate to destination', e);
+    }
   };
 
   const clearFilters = () => {
