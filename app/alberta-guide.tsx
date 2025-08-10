@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 
 type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck';
@@ -234,6 +234,14 @@ export default function AlbertaGuideScreen() {
     setShowWildlifeAlerts(false);
   };
 
+  const openWildlifeMap = useCallback(() => {
+    try {
+      router.push('/map/wildlife');
+    } catch (e) {
+      console.error('Failed to open wildlife map', e);
+    }
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen 
@@ -246,15 +254,19 @@ export default function AlbertaGuideScreen() {
       />
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Discover Alberta&apos;s Hidden Treasures</Text>
           <Text style={styles.subtitle}>
             From majestic waterfalls and hidden fishing spots to secret hot springs and bird watching havens, explore {ALL_ALBERTA_ATTRACTIONS.length} incredible destinations across Wild Rose Country. Includes dangerous animal warnings and safety tips.
           </Text>
+          <View style={styles.quickRow}>
+            <TouchableOpacity style={styles.quickButton} onPress={openWildlifeMap} testID="open-wildlife-map">
+              <Map size={16} color="#111827" />
+              <Text style={styles.quickText}>Wildlife Alert Map</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Search */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
             <Search size={20} color="#6b7280" />
@@ -678,6 +690,9 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
+  quickRow: { marginTop: 12, flexDirection: 'row', gap: 8 },
+  quickButton: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#f9fafb', borderWidth: 1, borderColor: '#e5e7eb', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12 },
+  quickText: { fontSize: 12, fontWeight: '700', color: '#111827' },
   wildlifeOverlay: {
     position: 'absolute',
     left: 8,
