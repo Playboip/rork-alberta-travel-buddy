@@ -4,7 +4,7 @@ export interface AlbertaAttraction {
   location: string;
   coordinates: { lat: number; lng: number };
   description: string;
-  category: 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing';
+  category: 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck';
   difficulty?: 'easy' | 'moderate' | 'difficult' | 'expert';
   season: string;
   image: string;
@@ -17,6 +17,10 @@ export interface AlbertaAttraction {
   distanceFromEdmonton?: string;
   isHidden: boolean;
   tips?: string[];
+  dangerousAnimals?: string[];
+  safetyWarnings?: string[];
+  bestTimeToVisit?: string;
+  accessibility?: string;
 }
 
 export const ALBERTA_HIKING_TRAILS: AlbertaAttraction[] = [

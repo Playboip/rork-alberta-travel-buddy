@@ -2,10 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 
-type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing';
+type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck';
 type PriceFilter = 'all' | 'free' | '$' | '$$' | '$$$' | '$$$$';
 type DifficultyFilter = 'all' | 'easy' | 'moderate' | 'difficult' | 'expert';
 
@@ -21,6 +21,11 @@ const categoryIcons = {
   food: Utensils,
   camping: TreePine,
   fishing: Fish,
+  waterfall: Droplets,
+  birdwatching: Bird,
+  river: Waves,
+  lake: Waves,
+  foodtruck: Truck,
 };
 
 const categoryColors = {
@@ -35,6 +40,11 @@ const categoryColors = {
   food: '#ec4899',
   camping: '#84cc16',
   fishing: '#0ea5e9',
+  waterfall: '#06b6d4',
+  birdwatching: '#eab308',
+  river: '#0891b2',
+  lake: '#0284c7',
+  foodtruck: '#dc2626',
 };
 
 const getDifficultyColor = (difficulty?: string) => {
@@ -182,12 +192,15 @@ export default function AlbertaGuideScreen() {
   const categories: { key: CategoryFilter; label: string; icon: any }[] = [
     { key: 'all', label: 'All', icon: Mountain },
     { key: 'hiking', label: 'Hiking', icon: TreePine },
+    { key: 'waterfall', label: 'Waterfalls', icon: Droplets },
+    { key: 'fishing', label: 'Fishing', icon: Fish },
+    { key: 'birdwatching', label: 'Bird Watching', icon: Bird },
     { key: 'hotspring', label: 'Hot Springs', icon: Waves },
     { key: 'hidden-gem', label: 'Hidden Gems', icon: Eye },
-    { key: 'cycling', label: 'Cycling', icon: Bike },
-    { key: 'fishing', label: 'Fishing', icon: Fish },
+    { key: 'river', label: 'Rivers', icon: Waves },
+    { key: 'lake', label: 'Lakes', icon: Waves },
+    { key: 'foodtruck', label: 'Food Trucks', icon: Truck },
     { key: 'adventure', label: 'Adventure', icon: Mountain },
-    { key: 'food', label: 'Food', icon: Utensils },
     { key: 'accommodation', label: 'Stay', icon: Bed },
   ];
 
@@ -219,7 +232,7 @@ export default function AlbertaGuideScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Discover Alberta&apos;s Hidden Treasures</Text>
           <Text style={styles.subtitle}>
-            From majestic hiking trails to secret hot springs, explore {ALL_ALBERTA_ATTRACTIONS.length} incredible destinations across Wild Rose Country.
+            From majestic waterfalls and hidden fishing spots to secret hot springs and bird watching havens, explore {ALL_ALBERTA_ATTRACTIONS.length} incredible destinations across Wild Rose Country. Includes dangerous animal warnings and safety tips.
           </Text>
         </View>
 
