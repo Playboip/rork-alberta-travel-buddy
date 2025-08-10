@@ -1,6 +1,6 @@
 export interface BookingItem {
   id: string;
-  type: 'hotel' | 'hostel' | 'apartment' | 'villa' | 'cabin' | 'flight' | 'activity' | 'car_rental' | 'restaurant' | 'tour' | 'experience' | 'uber' | 'meal_deal';
+  type: 'hotel' | 'hostel' | 'apartment' | 'villa' | 'cabin' | 'flight' | 'activity' | 'car_rental' | 'restaurant' | 'tour' | 'experience' | 'uber' | 'meal_deal' | 'train' | 'bus';
   name: string;
   description: string;
   location: string;
@@ -56,7 +56,7 @@ export interface Booking {
   id: string;
   userId: string;
   tripPlanId?: string;
-  type: 'hotel' | 'hostel' | 'apartment' | 'villa' | 'cabin' | 'flight' | 'activity' | 'car_rental' | 'restaurant' | 'tour' | 'experience' | 'uber' | 'meal_deal';
+  type: 'hotel' | 'hostel' | 'apartment' | 'villa' | 'cabin' | 'flight' | 'activity' | 'car_rental' | 'restaurant' | 'tour' | 'experience' | 'uber' | 'meal_deal' | 'train' | 'bus';
   itemId: string;
   itemName: string;
   itemDescription: string;

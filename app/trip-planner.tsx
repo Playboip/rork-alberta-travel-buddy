@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MapPin, Calendar, Users, Plus, Trash2, Plane, Hotel, Car, UtensilsCrossed, Camera, Map } from 'lucide-react-native';
-import { Stack, router } from 'expo-router';
+import { MapPin, Calendar, Users, Plus, Trash2, Plane, Hotel, Car, UtensilsCrossed, Camera, Map, Train, Bus } from 'lucide-react-native';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { TripPlan, BookingItem } from '@/types/booking';
 import { Image } from 'expo-image';
 
@@ -93,10 +93,43 @@ const mockAvailableItems: TripPlannerItem[] = [
     features: ['Farm-to-Table', 'Wine Pairing'],
     selected: false,
     tripDay: 2
+  },
+  {
+    id: '6',
+    type: 'train',
+    name: 'Rocky Mountaineer Day Trip',
+    description: 'Scenic passenger train through the Rockies',
+    location: 'Banff to Lake Louise',
+    price: 249,
+    currency: 'CAD',
+    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400&h=300&fit=crop',
+    rating: 4.9,
+    availability: true,
+    provider: 'Rocky Mountaineer',
+    features: ['Panoramic Views', 'Dining Car'],
+    selected: false,
+    tripDay: 2
+  },
+  {
+    id: '7',
+    type: 'bus',
+    name: 'Banff Airport Shuttle',
+    description: 'Comfortable shuttle from YYC to Banff',
+    location: 'Calgary to Banff',
+    price: 65,
+    currency: 'CAD',
+    image: 'https://images.unsplash.com/photo-1521292270410-a8c4d716d518?w=400&h=300&fit=crop',
+    rating: 4.4,
+    availability: true,
+    provider: 'Brewster Express',
+    features: ['WiFi', 'Luggage'],
+    selected: false,
+    tripDay: 1
   }
 ];
 
 export default function TripPlannerScreen() {
+  const params = useLocalSearchParams();
   const [tripPlan, setTripPlan] = useState<Partial<TripPlan>>({
     name: '',
     destination: '',
@@ -110,6 +143,68 @@ export default function TripPlannerScreen() {
   const [selectedItems, setSelectedItems] = useState<TripPlannerItem[]>([]);
   const [currentStep, setCurrentStep] = useState<'details' | 'items' | 'review'>('details');
 
+  useEffect(() => {
+    try {
+      console.log('[TripPlanner] incoming params', params);
+      const name = typeof params.name === 'string' ? params.name : undefined;
+      const destination = typeof params.destination === 'string' ? params.destination : undefined;
+      const startDate = typeof params.startDate === 'string' ? params.startDate : undefined;
+      const endDate = typeof params.endDate === 'string' ? params.endDate : undefined;
+      const notes = typeof params.notes === 'string' ? params.notes : undefined;
+      const itemsParam = typeof params.items === 'string' ? params.items : undefined;
+      const presetParam = typeof params.preset === 'string' ? params.preset : undefined;
+
+      let presetItems: Array<Partial<TripPlannerItem>> = [];
+      if (presetParam) {
+        try {
+          const parsed = JSON.parse(presetParam) as unknown;
+          if (Array.isArray(parsed)) {
+            presetItems = parsed as Array<Partial<TripPlannerItem>>;
+          }
+        } catch (e) {
+          console.warn('[TripPlanner] failed to parse preset json', e);
+        }
+      }
+
+      let idsFromItemsParam: string[] = [];
+      if (itemsParam) {
+        idsFromItemsParam = itemsParam.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+
+      const hasPrefill = Boolean(name || destination || startDate || endDate || notes || presetItems.length > 0 || idsFromItemsParam.length > 0);
+
+      if (hasPrefill) {
+        setTripPlan((prev) => ({
+          ...prev,
+          name: name ?? prev.name ?? '',
+          destination: destination ?? prev.destination ?? '',
+          startDate: startDate ?? prev.startDate ?? '',
+          endDate: endDate ?? prev.endDate ?? '',
+          notes: notes ?? prev.notes ?? '',
+        }));
+
+        // Map presets/ids into available items
+        setAvailableItems((prev) => {
+          const withSelections = prev.map((item) => {
+            const matchedById = idsFromItemsParam.includes(item.id);
+            const matchedByType = presetItems.find((p) => (p.id && p.id === item.id) || (p.type && p.type === item.type));
+            const shouldSelect = matchedById || Boolean(matchedByType);
+            return shouldSelect ? { ...item, selected: true } : item;
+          });
+          // Update selectedItems accordingly
+          const selected = withSelections.filter((it) => it.selected);
+          setSelectedItems(selected);
+          return withSelections;
+        });
+
+        // Jump to review for a frictionless add-to-trip flow
+        setCurrentStep('review');
+      }
+    } catch (e) {
+      console.error('[TripPlanner] prefill error', e);
+    }
+  }, [params]);
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'hotel': return <Hotel color="#f97316" size={20} />;
@@ -117,6 +212,8 @@ export default function TripPlannerScreen() {
       case 'car_rental': return <Car color="#10b981" size={20} />;
       case 'restaurant': return <UtensilsCrossed color="#ef4444" size={20} />;
       case 'tour': return <Map color="#8b5cf6" size={20} />;
+      case 'train': return <Train color="#0ea5e9" size={20} />;
+      case 'bus': return <Bus color="#22c55e" size={20} />;
       case 'experience': return <Camera color="#f59e0b" size={20} />;
       default: return <MapPin color="#6b7280" size={20} />;
     }
@@ -298,6 +395,7 @@ export default function TripPlannerScreen() {
             key={item.id}
             style={[styles.itemCard, item.selected && styles.selectedItemCard]}
             onPress={() => toggleItemSelection(item.id)}
+            testID={`item-${item.id}`}
           >
             <View style={styles.itemImageContainer}>
               <Image
@@ -343,6 +441,7 @@ export default function TripPlannerScreen() {
         <TouchableOpacity 
           style={styles.nextButton}
           onPress={() => setCurrentStep('review')}
+          testID="goToReview"
         >
           <Text style={styles.nextButtonText}>Review Trip</Text>
         </TouchableOpacity>
@@ -408,6 +507,7 @@ export default function TripPlannerScreen() {
         <TouchableOpacity 
           style={styles.createButton}
           onPress={handleCreateTrip}
+          testID="createTrip"
         >
           <Text style={styles.createButtonText}>Create Trip</Text>
         </TouchableOpacity>
@@ -418,10 +518,11 @@ export default function TripPlannerScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Trip Planner' }} />
-      <View style={styles.container}>
+      <View style={styles.container} testID="tripPlannerScreen">
         <LinearGradient
           colors={['#8b5cf6', '#7c3aed']}
           style={styles.header}
+          testID="tripPlannerHeader"
         >
           <Plus color="#ffffff" size={32} />
           <Text style={styles.headerTitle}>Plan Your Trip</Text>
@@ -430,7 +531,7 @@ export default function TripPlannerScreen() {
 
         {renderStepIndicator()}
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false} testID="tripPlannerContent">
           {currentStep === 'details' && renderDetailsStep()}
           {currentStep === 'items' && renderItemsStep()}
           {currentStep === 'review' && renderReviewStep()}
