@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 
 type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck';
@@ -71,15 +71,26 @@ const getPriceColor = (priceRange: string) => {
 interface AttractionCardProps {
   attraction: AlbertaAttraction;
   onPress: () => void;
+  showWildlifeBadge?: boolean;
 }
 
-const AttractionCard: React.FC<AttractionCardProps> = ({ attraction, onPress }) => {
+const AttractionCard: React.FC<AttractionCardProps> = ({ attraction, onPress, showWildlifeBadge = false }) => {
   const IconComponent = categoryIcons[attraction.category as keyof typeof categoryIcons] || Mountain;
   const categoryColor = categoryColors[attraction.category as keyof typeof categoryColors] || '#6b7280';
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} testID={`attraction-${attraction.id}`}>
-      <Image source={{ uri: attraction.image }} style={styles.cardImage} />
+      <View>
+        <Image source={{ uri: attraction.image }} style={styles.cardImage} />
+        {showWildlifeBadge && attraction.dangerousAnimals && attraction.dangerousAnimals.length > 0 && (
+          <View style={styles.wildlifeOverlay} testID={`wildlife-${attraction.id}`}>
+            <AlertTriangle size={14} color="#b91c1c" />
+            <Text style={styles.wildlifeText} numberOfLines={1}>
+              {attraction.dangerousAnimals.join(', ')}
+            </Text>
+          </View>
+        )}
+      </View>
       
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
@@ -150,6 +161,7 @@ export default function AlbertaGuideScreen() {
   const [priceFilter, setPriceFilter] = useState<PriceFilter>('all');
   const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>('all');
   const [showHiddenOnly, setShowHiddenOnly] = useState<boolean>(false);
+  const [showWildlifeAlerts, setShowWildlifeAlerts] = useState<boolean>(false);
   const filteredAttractions = useMemo(() => {
     return ALL_ALBERTA_ATTRACTIONS.filter(attraction => {
       // Search filter
@@ -219,6 +231,7 @@ export default function AlbertaGuideScreen() {
     setPriceFilter('all');
     setDifficultyFilter('all');
     setShowHiddenOnly(false);
+    setShowWildlifeAlerts(false);
   };
 
   return (
@@ -286,6 +299,7 @@ export default function AlbertaGuideScreen() {
           <TouchableOpacity
             style={[styles.filterButton, showHiddenOnly && styles.filterButtonActive]}
             onPress={() => setShowHiddenOnly(!showHiddenOnly)}
+            testID="filter-hidden"
           >
             <Eye size={14} color={showHiddenOnly ? '#ffffff' : '#6b7280'} />
             <Text style={[styles.filterButtonText, showHiddenOnly && styles.filterButtonTextActive]}>
@@ -293,7 +307,18 @@ export default function AlbertaGuideScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
+          <TouchableOpacity
+            style={[styles.filterButton, showWildlifeAlerts && styles.wildlifeButtonActive]}
+            onPress={() => setShowWildlifeAlerts(!showWildlifeAlerts)}
+            testID="filter-wildlife"
+          >
+            <AlertTriangle size={14} color={showWildlifeAlerts ? '#ffffff' : '#b91c1c'} />
+            <Text style={[styles.filterButtonText, showWildlifeAlerts && styles.filterButtonTextActive]}>
+              Wildlife Alerts
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.clearButton} onPress={clearFilters} testID="filter-clear">
             <Filter size={14} color="#ef4444" />
             <Text style={styles.clearButtonText}>Clear Filters</Text>
           </TouchableOpacity>
@@ -318,6 +343,7 @@ export default function AlbertaGuideScreen() {
               key={attraction.id}
               attraction={attraction}
               onPress={() => handleAttractionPress(attraction)}
+              showWildlifeBadge={showWildlifeAlerts}
             />
           ))}
         </View>
@@ -652,4 +678,25 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
+  wildlifeOverlay: {
+    position: 'absolute',
+    left: 8,
+    top: 8,
+    backgroundColor: '#fee2e2',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  wildlifeText: {
+    fontSize: 12,
+    color: '#991b1b',
+    fontWeight: '600',
+    maxWidth: 260,
+  },
+  wildlifeButtonActive: {
+    backgroundColor: '#b91c1c',
+  }
 });
