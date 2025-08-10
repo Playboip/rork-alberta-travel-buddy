@@ -2,10 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 
-type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping';
+type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing';
 type PriceFilter = 'all' | 'free' | '$' | '$$' | '$$$' | '$$$$';
 type DifficultyFilter = 'all' | 'easy' | 'moderate' | 'difficult' | 'expert';
 
@@ -20,6 +20,7 @@ const categoryIcons = {
   accommodation: Bed,
   food: Utensils,
   camping: TreePine,
+  fishing: Fish,
 };
 
 const categoryColors = {
@@ -33,6 +34,7 @@ const categoryColors = {
   accommodation: '#f97316',
   food: '#ec4899',
   camping: '#84cc16',
+  fishing: '#0ea5e9',
 };
 
 const getDifficultyColor = (difficulty?: string) => {
@@ -183,6 +185,7 @@ export default function AlbertaGuideScreen() {
     { key: 'hotspring', label: 'Hot Springs', icon: Waves },
     { key: 'hidden-gem', label: 'Hidden Gems', icon: Eye },
     { key: 'cycling', label: 'Cycling', icon: Bike },
+    { key: 'fishing', label: 'Fishing', icon: Fish },
     { key: 'adventure', label: 'Adventure', icon: Mountain },
     { key: 'food', label: 'Food', icon: Utensils },
     { key: 'accommodation', label: 'Stay', icon: Bed },
