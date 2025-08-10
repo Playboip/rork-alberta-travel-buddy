@@ -6,7 +6,7 @@ import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, U
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 import WildlifeMap from '@/components/map/WildlifeMap';
 
-type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck';
+type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'hidden-waters' | 'food-all';
 type PriceFilter = 'all' | 'free' | '$' | '$$' | '$$$' | '$$$$';
 type DifficultyFilter = 'all' | 'easy' | 'moderate' | 'difficult' | 'expert';
 
@@ -27,6 +27,8 @@ const categoryIcons = {
   river: Waves,
   lake: Waves,
   foodtruck: Truck,
+  'hidden-waters': Waves,
+  'food-all': Utensils,
 };
 
 const categoryColors = {
@@ -46,6 +48,8 @@ const categoryColors = {
   river: '#0891b2',
   lake: '#0284c7',
   foodtruck: '#dc2626',
+  'hidden-waters': '#0891b2',
+  'food-all': '#db2777',
 };
 
 const getDifficultyColor = (difficulty?: string) => {
@@ -180,8 +184,14 @@ export default function AlbertaGuideScreen() {
       }
 
       // Category filter
-      if (categoryFilter !== 'all' && attraction.category !== categoryFilter) {
-        return false;
+      if (categoryFilter !== 'all') {
+        if (categoryFilter === 'hidden-waters') {
+          if (!(attraction.category === 'river' || attraction.category === 'lake')) return false;
+        } else if (categoryFilter === 'food-all') {
+          if (!(attraction.category === 'food' || attraction.category === 'foodtruck')) return false;
+        } else if (attraction.category !== categoryFilter) {
+          return false;
+        }
       }
 
       // Price filter
@@ -205,15 +215,14 @@ export default function AlbertaGuideScreen() {
 
   const categories: { key: CategoryFilter; label: string; icon: any }[] = [
     { key: 'all', label: 'All', icon: Mountain },
-    { key: 'hiking', label: 'Hiking', icon: TreePine },
     { key: 'waterfall', label: 'Waterfalls', icon: Droplets },
     { key: 'fishing', label: 'Fishing', icon: Fish },
-    { key: 'birdwatching', label: 'Bird Watching', icon: Bird },
-    { key: 'hotspring', label: 'Hot Springs', icon: Waves },
+    { key: 'birdwatching', label: 'Birding', icon: Bird },
+    { key: 'hidden-waters', label: 'Hidden Rivers & Lakes', icon: Waves },
+    { key: 'camping', label: 'Camps & Campgrounds', icon: TreePine },
+    { key: 'food-all', label: 'Food Trucks & Local Eats', icon: Utensils },
     { key: 'hidden-gem', label: 'Hidden Gems', icon: Eye },
-    { key: 'river', label: 'Rivers', icon: Waves },
-    { key: 'lake', label: 'Lakes', icon: Waves },
-    { key: 'foodtruck', label: 'Food Trucks', icon: Truck },
+    { key: 'hotspring', label: 'Hot Springs', icon: Waves },
     { key: 'adventure', label: 'Adventure', icon: Mountain },
     { key: 'accommodation', label: 'Stay', icon: Bed },
   ];
