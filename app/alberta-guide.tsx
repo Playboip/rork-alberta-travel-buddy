@@ -2,8 +2,9 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map, ChevronDown, ChevronUp, Maximize2 } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
+import WildlifeMap from '@/components/map/WildlifeMap';
 
 type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck';
 type PriceFilter = 'all' | 'free' | '$' | '$$' | '$$$' | '$$$$';
@@ -162,6 +163,7 @@ export default function AlbertaGuideScreen() {
   const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>('all');
   const [showHiddenOnly, setShowHiddenOnly] = useState<boolean>(false);
   const [showWildlifeAlerts, setShowWildlifeAlerts] = useState<boolean>(false);
+  const [showInlineMap, setShowInlineMap] = useState<boolean>(true);
   const filteredAttractions = useMemo(() => {
     return ALL_ALBERTA_ATTRACTIONS.filter(attraction => {
       // Search filter
@@ -347,6 +349,32 @@ export default function AlbertaGuideScreen() {
             </Text>
           )}
         </View>
+
+        {showWildlifeAlerts && (
+          <View style={styles.miniMapCard} testID="inline-mini-map">
+            <View style={styles.miniMapHeader}>
+              <View style={styles.miniMapTitleRow}>
+                <AlertTriangle size={16} color="#b91c1c" />
+                <Text style={styles.miniMapTitle}>Wildlife alerts preview</Text>
+              </View>
+              <View style={styles.miniMapActions}>
+                <TouchableOpacity style={styles.miniMapActionBtn} onPress={openWildlifeMap} testID="inline-map-open-full">
+                  <Maximize2 size={14} color="#111827" />
+                  <Text style={styles.miniMapActionText}>Open Map</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.miniMapActionBtn} onPress={() => setShowInlineMap(!showInlineMap)} testID="inline-map-toggle">
+                  {showInlineMap ? <ChevronUp size={14} color="#111827" /> : <ChevronDown size={14} color="#111827" />}
+                  <Text style={styles.miniMapActionText}>{showInlineMap ? 'Hide' : 'Show'}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {showInlineMap && (
+              <View style={styles.miniMapBody}>
+                <WildlifeMap compact />
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Attractions List */}
         <View style={styles.attractionsList}>
@@ -713,5 +741,14 @@ const styles = StyleSheet.create({
   },
   wildlifeButtonActive: {
     backgroundColor: '#b91c1c',
-  }
-});
+  },
+  miniMapCard: { marginHorizontal: 16, marginBottom: 12, backgroundColor: '#ffffff', borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: '#e5e7eb' },
+  miniMapHeader: { paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#f9fafb', borderBottomWidth: 1, borderBottomColor: '#e5e7eb', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  miniMapTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  miniMapTitle: { fontSize: 12, fontWeight: '800', color: '#111827' },
+  miniMapActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  miniMapActionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e5e7eb', paddingHorizontal: 8, paddingVertical: 6, borderRadius: 10 },
+  miniMapActionText: { fontSize: 12, fontWeight: '700', color: '#111827' },
+  miniMapBody: { height: 180 },
+}
+);

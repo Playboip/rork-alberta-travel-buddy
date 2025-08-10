@@ -9,6 +9,7 @@ interface WildlifeMapProps {
   selectedSpecies?: Species[];
   seasonFilter?: 'all' | 'spring' | 'summer' | 'fall' | 'winter';
   onFiltersChange?: (filters: { species: Species[]; season: 'all' | 'spring' | 'summer' | 'fall' | 'winter' }) => void;
+  compact?: boolean;
 }
 
 export default function WildlifeMap({
@@ -16,6 +17,7 @@ export default function WildlifeMap({
   selectedSpecies,
   seasonFilter = 'all',
   onFiltersChange,
+  compact = false,
 }: WildlifeMapProps) {
   const [localSpecies, setLocalSpecies] = useState<Species[]>(selectedSpecies ?? ['bear', 'cougar', 'wolf', 'moose', 'elk', 'bison', 'coyote']);
   const [localSeason, setLocalSeason] = useState<'all' | 'spring' | 'summer' | 'fall' | 'winter'>(seasonFilter);
@@ -51,12 +53,14 @@ export default function WildlifeMap({
   }, [onFiltersChange, localSpecies]);
 
   return (
-    <View style={styles.container} testID="wildlife-map">
-      <View style={styles.mapArea}>
-        <View style={styles.mapPlaceholder}>
-          <AlertTriangle size={24} color="#b91c1c" />
-          <Text style={styles.placeholderTitleText}>Map preview in Expo Go</Text>
-          <Text style={styles.placeholderSubText}>Interactive maps require expo-maps dev client. We render clustered pins preview.</Text>
+    <View style={[styles.container, compact ? { backgroundColor: '#f9fafb' } : undefined]} testID="wildlife-map">
+      <View style={[styles.mapArea, compact ? { height: '100%' } : undefined]}>
+        <View style={[styles.mapPlaceholder, compact ? { padding: 8 } : undefined]}>
+          <AlertTriangle size={compact ? 18 : 24} color="#b91c1c" />
+          <Text style={[styles.placeholderTitleText, compact ? { fontSize: 12 } : undefined]}>Map preview in Expo Go</Text>
+          {!compact && (
+            <Text style={styles.placeholderSubText}>Interactive maps require expo-maps dev client. We render clustered pins preview.</Text>
+          )}
         </View>
         {clusters.map(({ key, list }) => {
           const top = (Math.random() * 60) + 20;
@@ -76,31 +80,33 @@ export default function WildlifeMap({
         })}
       </View>
 
-      <View style={styles.filters}>
-        <View style={styles.filtersHeader}>
-          <Filter size={16} color="#111827" />
-          <Text style={styles.filtersTitle}>Filters</Text>
-          <TouchableOpacity onPress={() => { setLocalSpecies(['bear','cougar','wolf','moose','elk','bison','coyote']); setSeason('all'); }} testID="filters-reset">
-            <X size={16} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.pillsRow}>
-          {(Object.keys(SPECIES_COLORS) as Species[]).map(s => (
-            <TouchableOpacity key={s} onPress={() => toggleSpecies(s)} style={[styles.pill, localSpecies.includes(s) ? { backgroundColor: SPECIES_COLORS[s] + '22', borderColor: SPECIES_COLORS[s] } : undefined]} testID={`species-${s}`}>
-              <Text style={[styles.pillText, { color: SPECIES_COLORS[s] }]}>{s}</Text>
+      {!compact && (
+        <View style={styles.filters}>
+          <View style={styles.filtersHeader}>
+            <Filter size={16} color="#111827" />
+            <Text style={styles.filtersTitle}>Filters</Text>
+            <TouchableOpacity onPress={() => { setLocalSpecies(['bear','cougar','wolf','moose','elk','bison','coyote']); setSeason('all'); }} testID="filters-reset">
+              <X size={16} color="#6b7280" />
             </TouchableOpacity>
-          ))}
-        </View>
+          </View>
 
-        <View style={styles.pillsRow}>
-          {(['all','spring','summer','fall','winter'] as const).map(season => (
-            <TouchableOpacity key={season} onPress={() => setSeason(season)} style={[styles.pill, localSeason === season ? { backgroundColor: '#11182711', borderColor: '#111827' } : undefined]} testID={`season-${season}`}>
-              <Text style={[styles.pillText, { color: '#111827' }]}>{season}</Text>
-            </TouchableOpacity>
-          ))}
+          <View style={styles.pillsRow}>
+            {(Object.keys(SPECIES_COLORS) as Species[]).map(s => (
+              <TouchableOpacity key={s} onPress={() => toggleSpecies(s)} style={[styles.pill, localSpecies.includes(s) ? { backgroundColor: SPECIES_COLORS[s] + '22', borderColor: SPECIES_COLORS[s] } : undefined]} testID={`species-${s}`}>
+                <Text style={[styles.pillText, { color: SPECIES_COLORS[s] }]}>{s}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={styles.pillsRow}>
+            {(['all','spring','summer','fall','winter'] as const).map(season => (
+              <TouchableOpacity key={season} onPress={() => setSeason(season)} style={[styles.pill, localSeason === season ? { backgroundColor: '#11182711', borderColor: '#111827' } : undefined]} testID={`season-${season}`}>
+                <Text style={[styles.pillText, { color: '#111827' }]}>{season}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 }
