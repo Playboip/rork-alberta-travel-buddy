@@ -2,11 +2,11 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map, ChevronDown, ChevronUp, Maximize2 } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map, ChevronDown, ChevronUp, Maximize2, Plane } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 import WildlifeMap from '@/components/map/WildlifeMap';
 
-type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'hidden-waters' | 'food-all';
+type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'hidden-waters' | 'food-all' | 'scenic-flight';
 type PriceFilter = 'all' | 'free' | '$' | '$$' | '$$$' | '$$$$';
 type DifficultyFilter = 'all' | 'easy' | 'moderate' | 'difficult' | 'expert';
 
@@ -29,6 +29,7 @@ const categoryIcons = {
   foodtruck: Truck,
   'hidden-waters': Waves,
   'food-all': Utensils,
+  'scenic-flight': Plane,
 };
 
 const categoryColors = {
@@ -50,6 +51,7 @@ const categoryColors = {
   foodtruck: '#dc2626',
   'hidden-waters': '#0891b2',
   'food-all': '#db2777',
+  'scenic-flight': '#0ea5e9',
 };
 
 const getDifficultyColor = (difficulty?: string) => {
@@ -225,6 +227,7 @@ export default function AlbertaGuideScreen() {
     { key: 'hotspring', label: 'Hot Springs', icon: Waves },
     { key: 'adventure', label: 'Adventure', icon: Mountain },
     { key: 'accommodation', label: 'Stay', icon: Bed },
+    { key: 'scenic-flight', label: 'Scenic Flights & Heli-Tours', icon: Plane },
   ];
 
   const handleAttractionPress = (attraction: AlbertaAttraction) => {

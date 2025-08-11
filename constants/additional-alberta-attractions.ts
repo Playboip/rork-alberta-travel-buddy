@@ -898,6 +898,86 @@ export const ALBERTA_FISHING_SPOTS: AlbertaAttraction[] = [
   }
 ];
 
+// Regional Scenic Flights & Heli-Tours
+export const ALBERTA_SCENIC_FLIGHTS: AlbertaAttraction[] = [
+  {
+    id: 'sf1',
+    name: 'Rockies Helicopter Tour (Canmore/Spray Lakes)',
+    location: 'Canmore / Kananaskis Country',
+    coordinates: { lat: 51.089, lng: -115.352 },
+    description: 'Epic heli tour over Spray Lakes, Three Sisters, and Kananaskis peaks. Short scenic loops and longer glacier routes available.',
+    category: 'scenic-flight',
+    season: 'Year-round (weather dependent)',
+    image: 'https://images.unsplash.com/photo-1520975916090-3105956dac38?w=1600&h=900&fit=crop',
+    rating: 4.8,
+    priceRange: '$$$$',
+    duration: '12–45 minutes',
+    features: ['Helicopter', 'Glacier views', 'Kananaskis peaks', 'Doors-on'],
+    nearestCity: 'Canmore',
+    distanceFromCalgary: '1.5 hours',
+    distanceFromEdmonton: '4.5 hours',
+    isHidden: false,
+    tips: ['Arrive 30 minutes early', 'Weather can delay flights', 'Sunglasses reduce glare']
+  },
+  {
+    id: 'sf2',
+    name: 'Icefields Glacier Heli Tour (Abraham Lake/Nordegg)',
+    location: 'David Thompson Country',
+    coordinates: { lat: 52.2108, lng: -116.5786 },
+    description: 'Remote heli sightseeing over Cline River, Abraham Lake “bubble” zones, and Columbia Icefield fringes.',
+    category: 'scenic-flight',
+    season: 'Year-round (best Jun–Sep, Jan–Feb for bubbles)',
+    image: 'https://images.unsplash.com/photo-1547411349-7393ef2c8d5e?w=1600&h=900&fit=crop',
+    rating: 4.7,
+    priceRange: '$$$$',
+    duration: '20–55 minutes',
+    features: ['Helicopter', 'Abraham Lake', 'Columbia Icefield edges', 'Remote vistas'],
+    nearestCity: 'Nordegg',
+    distanceFromCalgary: '3 hours',
+    distanceFromEdmonton: '2.5 hours',
+    isHidden: true,
+    tips: ['Combine with bubble photography in winter', 'Layers recommended']
+  },
+  {
+    id: 'sf3',
+    name: 'Banff National Park Fixed-Wing Scenic',
+    location: 'Springbank Airport (Calgary West)',
+    coordinates: { lat: 51.1044, lng: -114.3748 },
+    description: 'Fixed‑wing flight skirting the Rockies front ranges with sweeping views toward Banff and Lake Minnewanka.',
+    category: 'scenic-flight',
+    season: 'Year-round',
+    image: 'https://images.unsplash.com/photo-1518306727298-4c182f5cbb77?w=1600&h=900&fit=crop',
+    rating: 4.6,
+    priceRange: '$$$',
+    duration: '30–60 minutes',
+    features: ['Airplane', 'Front ranges', 'Lake Minnewanka', 'Smooth ride'],
+    nearestCity: 'Calgary',
+    distanceFromCalgary: '30 minutes (to airport)',
+    distanceFromEdmonton: '3 hours',
+    isHidden: false,
+    tips: ['Best light late afternoon', 'Sit on south side for Bow Valley views']
+  },
+  {
+    id: 'sf4',
+    name: 'Jasper Area Heli Overview (Hinton base)',
+    location: 'Jasper / Hinton',
+    coordinates: { lat: 53.4108, lng: -117.5765 },
+    description: 'Heli loops over Miette Range, Folding Mountain, and Jasper foothills with chances of spotting mountain goats.',
+    category: 'scenic-flight',
+    season: 'May – October',
+    image: 'https://images.unsplash.com/photo-1532102231459-139a66f31f77?w=1600&h=900&fit=crop',
+    rating: 4.5,
+    priceRange: '$$$$',
+    duration: '20–40 minutes',
+    features: ['Helicopter', 'Miette Range', 'Wildlife spotting', 'Foothill ridgelines'],
+    nearestCity: 'Jasper',
+    distanceFromCalgary: '5 hours',
+    distanceFromEdmonton: '3 hours',
+    isHidden: true,
+    tips: ['Mornings are calmest', 'Bring telephoto lens for wildlife']
+  }
+];
+
 export const ALL_ADDITIONAL_ATTRACTIONS = [
   ...ALBERTA_WATERFALLS,
   ...ALBERTA_BIRDWATCHING_SPOTS,
@@ -905,5 +985,6 @@ export const ALL_ADDITIONAL_ATTRACTIONS = [
   ...ALBERTA_FOOD_TRUCKS,
   ...ADDITIONAL_ALBERTA_ATTRACTIONS,
   ...ALBERTA_ADVENTURES,
+  ...ALBERTA_SCENIC_FLIGHTS,
   ...ALBERTA_FISHING_SPOTS
 ];
