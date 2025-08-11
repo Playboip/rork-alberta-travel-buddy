@@ -998,6 +998,119 @@ export const ALBERTA_SCENIC_FLIGHTS: AlbertaAttraction[] = [
   }
 ];
 
+// Wineries
+export const ALBERTA_WINERIES: AlbertaAttraction[] = [
+  {
+    id: 'wi1',
+    name: 'Spirit Hills Flower Winery',
+    location: 'Millarville, Foothills',
+    coordinates: { lat: 50.7874, lng: -114.3225 },
+    description: 'Award-winning Alberta flower wines crafted from local honey and wildflowers with prairie-meets-alpine vibes.',
+    category: 'winery',
+    season: 'Year-round',
+    image: 'https://images.unsplash.com/photo-1514361892635-6b07e31e75d9?w=1200&h=800&fit=crop',
+    rating: 4.7,
+    priceRange: '$$',
+    duration: '60–90 minutes (tasting)',
+    features: ['Flower wines', 'Local honey', 'Tasting room', 'Farm tours'],
+    nearestCity: 'Calgary',
+    distanceFromCalgary: '50 minutes',
+    distanceFromEdmonton: '3.5 hours',
+    isHidden: true,
+    tips: ['Prebook tastings on weekends', 'Try the Wild Rosy and Saskatoon varieties']
+  },
+  {
+    id: 'wi2',
+    name: 'Field Stone Fruit Wines',
+    location: 'Strathmore area (SE of Calgary)',
+    coordinates: { lat: 50.9715, lng: -113.3857 },
+    description: 'Prairie fruit winery producing vibrant berry wines. U-pick orchard vibes in summer.',
+    category: 'winery',
+    season: 'May – October (shop year-round)',
+    image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=1200&h=800&fit=crop',
+    rating: 4.5,
+    priceRange: '$$',
+    duration: '45–75 minutes (tasting + shop)',
+    features: ['Berry wines', 'U-pick in season', 'Farm store', 'Local produce'],
+    nearestCity: 'Calgary',
+    distanceFromCalgary: '45 minutes',
+    distanceFromEdmonton: '3 hours',
+    isHidden: false,
+    tips: ['Best in July–August for u-pick', 'Great picnic stop nearby']
+  },
+  {
+    id: 'wi3',
+    name: 'Barr Estate Winery',
+    location: 'Sherwood Park (Edmonton area)',
+    coordinates: { lat: 53.5304, lng: -113.2410 },
+    description: 'Small-batch rhubarb and raspberry wines on a working farm just outside Edmonton.',
+    category: 'winery',
+    season: 'May – October (check hours)',
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&h=800&fit=crop',
+    rating: 4.4,
+    priceRange: '$$',
+    duration: '45–60 minutes (tasting)',
+    features: ['Rhubarb wine', 'Farm setting', 'Local produce', 'Family-run'],
+    nearestCity: 'Edmonton',
+    distanceFromCalgary: '3 hours',
+    distanceFromEdmonton: '25 minutes',
+    isHidden: true,
+    tips: ['Call ahead for hours', 'Seasonal product availability varies']
+  }
+];
+
+// Winery Tours (operators)
+export const ALBERTA_WINERY_TOURS: AlbertaAttraction[] = [
+  {
+    id: 'wt1',
+    name: 'Foothills Wine & Cider Loop (Self-Drive Guide)',
+    location: 'Foothills south-west of Calgary',
+    coordinates: { lat: 50.85, lng: -114.3 },
+    description: 'Curated self-drive loop connecting flower, fruit wine, and craft cider stops with foothills scenery.',
+    category: 'winery-tour',
+    season: 'May – October',
+    image: 'https://images.unsplash.com/photo-1523365280197-f1783db9fe62?w=1200&h=800&fit=crop',
+    rating: 4.6,
+    priceRange: '$',
+    duration: 'Half day',
+    features: ['Self-guided', 'Multiple stops', 'Scenic roads', 'Picnic options'],
+    nearestCity: 'Calgary',
+    distanceFromCalgary: '30–90 minutes between stops',
+    distanceFromEdmonton: '3.5–4.5 hours to start',
+    isHidden: true,
+    tips: ['Designate a driver', 'Book tastings ahead on weekends'],
+    operatorName: 'Alberta Foothills Tourism',
+    operatorUrl: 'https://www.travelalberta.com/',
+    priceMinCad: 0,
+    priceMaxCad: 0,
+    pricingNotes: 'Self-drive guide is free; tastings priced per venue'
+  },
+  {
+    id: 'wt2',
+    name: 'Calgary Area Wine Shuttle (Private Charter)',
+    location: 'Calgary pickup',
+    coordinates: { lat: 51.0447, lng: -114.0719 },
+    description: 'Private driver service for custom winery/cidery tasting days in the foothills region.',
+    category: 'winery-tour',
+    season: 'Year-round (best May–Oct)',
+    image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=800&fit=crop',
+    rating: 4.7,
+    priceRange: '$$$',
+    duration: '4–8 hours',
+    features: ['Private driver', 'Custom itinerary', 'Group friendly', 'Door-to-door'],
+    nearestCity: 'Calgary',
+    distanceFromCalgary: 'Pickup included',
+    distanceFromEdmonton: '3 hours to region',
+    isHidden: false,
+    tips: ['Book 1–2 weeks ahead', 'Confirm venue hours/seasonality'],
+    operatorName: 'Foothills Day Tours',
+    operatorUrl: 'https://example.com/foothills-day-tours',
+    priceMinCad: 399,
+    priceMaxCad: 899,
+    pricingNotes: 'Vehicle size and hours vary; tasting fees extra'
+  }
+];
+
 export const ALL_ADDITIONAL_ATTRACTIONS = [
   ...ALBERTA_WATERFALLS,
   ...ALBERTA_BIRDWATCHING_SPOTS,
@@ -1006,5 +1119,7 @@ export const ALL_ADDITIONAL_ATTRACTIONS = [
   ...ADDITIONAL_ALBERTA_ATTRACTIONS,
   ...ALBERTA_ADVENTURES,
   ...ALBERTA_SCENIC_FLIGHTS,
-  ...ALBERTA_FISHING_SPOTS
+  ...ALBERTA_FISHING_SPOTS,
+  ...ALBERTA_WINERIES,
+  ...ALBERTA_WINERY_TOURS,
 ];

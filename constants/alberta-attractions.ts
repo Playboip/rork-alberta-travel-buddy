@@ -4,7 +4,7 @@ export interface AlbertaAttraction {
   location: string;
   coordinates: { lat: number; lng: number };
   description: string;
-  category: 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'scenic-flight';
+  category: 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'scenic-flight' | 'winery' | 'winery-tour';
   difficulty?: 'easy' | 'moderate' | 'difficult' | 'expert';
   season: string;
   image: string;

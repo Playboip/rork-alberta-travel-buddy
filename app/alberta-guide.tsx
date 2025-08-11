@@ -2,11 +2,11 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
-import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map, ChevronDown, ChevronUp, Maximize2, Plane } from 'lucide-react-native';
+import { Search, MapPin, Star, Clock, Filter, Mountain, Waves, TreePine, Bike, Utensils, Bed, Eye, Fish, Droplets, Bird, Truck, AlertTriangle, Map, ChevronDown, ChevronUp, Maximize2, Plane, Wine, Route } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 import WildlifeMap from '@/components/map/WildlifeMap';
 
-type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'hidden-waters' | 'food-all' | 'scenic-flight';
+type CategoryFilter = 'all' | 'hiking' | 'hotspring' | 'hidden-gem' | 'cycling' | 'walking' | 'adventure' | 'sightseeing' | 'accommodation' | 'food' | 'camping' | 'fishing' | 'waterfall' | 'birdwatching' | 'river' | 'lake' | 'foodtruck' | 'hidden-waters' | 'food-all' | 'scenic-flight' | 'winery' | 'winery-tour';
 type PriceFilter = 'all' | 'free' | '$' | '$$' | '$$$' | '$$$$';
 type DifficultyFilter = 'all' | 'easy' | 'moderate' | 'difficult' | 'expert';
 
@@ -30,6 +30,8 @@ const categoryIcons = {
   'hidden-waters': Waves,
   'food-all': Utensils,
   'scenic-flight': Plane,
+  winery: Wine,
+  'winery-tour': Route,
 };
 
 const categoryColors = {
@@ -52,6 +54,8 @@ const categoryColors = {
   'hidden-waters': '#0891b2',
   'food-all': '#db2777',
   'scenic-flight': '#0ea5e9',
+  winery: '#7c3aed',
+  'winery-tour': '#9333ea',
 };
 
 const getDifficultyColor = (difficulty?: string) => {
@@ -228,6 +232,8 @@ export default function AlbertaGuideScreen() {
     { key: 'adventure', label: 'Adventure', icon: Mountain },
     { key: 'accommodation', label: 'Stay', icon: Bed },
     { key: 'scenic-flight', label: 'Scenic Flights & Heli-Tours', icon: Plane },
+    { key: 'winery', label: 'Wineries', icon: Wine },
+    { key: 'winery-tour', label: 'Winery Tours', icon: Route },
   ];
 
   const handleAttractionPress = (attraction: AlbertaAttraction) => {
