@@ -146,25 +146,18 @@ export default function TripPlannerScreen() {
   useEffect(() => {
     try {
       console.log('[TripPlanner] incoming params', params);
-      const rawName = typeof params.name === 'string' ? params.name : undefined;
-      const rawDestination = typeof params.destination === 'string' ? params.destination : undefined;
-      const rawStartDate = typeof params.startDate === 'string' ? params.startDate : undefined;
-      const rawEndDate = typeof params.endDate === 'string' ? params.endDate : undefined;
-      const rawNotes = typeof params.notes === 'string' ? params.notes : undefined;
+      const name = typeof params.name === 'string' ? params.name : undefined;
+      const destination = typeof params.destination === 'string' ? params.destination : undefined;
+      const startDate = typeof params.startDate === 'string' ? params.startDate : undefined;
+      const endDate = typeof params.endDate === 'string' ? params.endDate : undefined;
+      const notes = typeof params.notes === 'string' ? params.notes : undefined;
       const itemsParam = typeof params.items === 'string' ? params.items : undefined;
       const presetParam = typeof params.preset === 'string' ? params.preset : undefined;
-
-      const name = rawName ? decodeURIComponent(rawName) : undefined;
-      const destination = rawDestination ? decodeURIComponent(rawDestination) : undefined;
-      const startDate = rawStartDate ? decodeURIComponent(rawStartDate) : undefined;
-      const endDate = rawEndDate ? decodeURIComponent(rawEndDate) : undefined;
-      const notes = rawNotes ? decodeURIComponent(rawNotes) : undefined;
 
       let presetItems: Array<Partial<TripPlannerItem>> = [];
       if (presetParam) {
         try {
-          const decoded = decodeURIComponent(presetParam);
-          const parsed = JSON.parse(decoded) as unknown;
+          const parsed = JSON.parse(presetParam) as unknown;
           if (Array.isArray(parsed)) {
             presetItems = parsed as Array<Partial<TripPlannerItem>>;
           }
