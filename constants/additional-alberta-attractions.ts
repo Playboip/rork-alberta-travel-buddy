@@ -917,7 +917,12 @@ export const ALBERTA_SCENIC_FLIGHTS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '4.5 hours',
     isHidden: false,
-    tips: ['Arrive 30 minutes early', 'Weather can delay flights', 'Sunglasses reduce glare']
+    tips: ['Arrive 30 minutes early', 'Weather can delay flights', 'Sunglasses reduce glare'],
+    operatorName: 'Alpine Heli Tours',
+    operatorUrl: 'https://example.com/alpine-heli',
+    priceMinCad: 189,
+    priceMaxCad: 699,
+    pricingNotes: 'Per person, based on route length; private charters available'
   },
   {
     id: 'sf2',
@@ -936,7 +941,12 @@ export const ALBERTA_SCENIC_FLIGHTS: AlbertaAttraction[] = [
     distanceFromCalgary: '3 hours',
     distanceFromEdmonton: '2.5 hours',
     isHidden: true,
-    tips: ['Combine with bubble photography in winter', 'Layers recommended']
+    tips: ['Combine with bubble photography in winter', 'Layers recommended'],
+    operatorName: 'Icefields Heli',
+    operatorUrl: 'https://example.com/icefields-heli',
+    priceMinCad: 249,
+    priceMaxCad: 799,
+    pricingNotes: 'Higher winter demand pricing during bubble season'
   },
   {
     id: 'sf3',
@@ -955,7 +965,12 @@ export const ALBERTA_SCENIC_FLIGHTS: AlbertaAttraction[] = [
     distanceFromCalgary: '30 minutes (to airport)',
     distanceFromEdmonton: '3 hours',
     isHidden: false,
-    tips: ['Best light late afternoon', 'Sit on south side for Bow Valley views']
+    tips: ['Best light late afternoon', 'Sit on south side for Bow Valley views'],
+    operatorName: 'Rocky Skies Air Tours',
+    operatorUrl: 'https://example.com/rocky-skies',
+    priceMinCad: 159,
+    priceMaxCad: 399,
+    pricingNotes: 'Shared flights; private upgrades available'
   },
   {
     id: 'sf4',
@@ -974,7 +989,12 @@ export const ALBERTA_SCENIC_FLIGHTS: AlbertaAttraction[] = [
     distanceFromCalgary: '5 hours',
     distanceFromEdmonton: '3 hours',
     isHidden: true,
-    tips: ['Mornings are calmest', 'Bring telephoto lens for wildlife']
+    tips: ['Mornings are calmest', 'Bring telephoto lens for wildlife'],
+    operatorName: 'Jasper Heli Co.',
+    operatorUrl: 'https://example.com/jasper-heli',
+    priceMinCad: 229,
+    priceMaxCad: 649,
+    pricingNotes: 'Seasonal pricing; fuel surcharge may apply'
   }
 ];
 

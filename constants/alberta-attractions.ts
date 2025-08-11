@@ -21,6 +21,11 @@ export interface AlbertaAttraction {
   safetyWarnings?: string[];
   bestTimeToVisit?: string;
   accessibility?: string;
+  operatorName?: string;
+  operatorUrl?: string;
+  priceMinCad?: number;
+  priceMaxCad?: number;
+  pricingNotes?: string;
 }
 
 export const ALBERTA_HIKING_TRAILS: AlbertaAttraction[] = [
@@ -349,7 +354,7 @@ export const ALBERTA_ACCOMMODATIONS: AlbertaAttraction[] = [
     id: 'a3',
     name: 'Tunnel Mountain Village Campground',
     location: 'Banff',
-    coordinates: { lat: 51.1667, lng: -115.5500 },
+    coordinates: { lat: 51.1667, lng: -115.55 },
     description: 'Popular campground with RV and tent sites near Banff townsite.',
     category: 'camping',
     season: 'May - October',

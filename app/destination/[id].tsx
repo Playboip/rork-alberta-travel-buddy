@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Linking, Alert } from 'react-native';
 import { useLocalSearchParams, Stack, router } from 'expo-router';
-import { MapPin, Star, Clock, ShieldAlert, BeanIcon as Bear, Bird, Fish, Droplets, Mountain, Eye, Train, Plane, Hotel, Car, Map } from 'lucide-react-native';
+import { MapPin, Star, Clock, ShieldAlert, Bird, Fish, Droplets, Mountain, Eye, Train, Plane, Hotel, Car, ExternalLink, DollarSign, Send } from 'lucide-react-native';
 import { ALL_ALBERTA_ATTRACTIONS, AlbertaAttraction } from '@/constants/alberta-attractions';
 
 function getIconForCategory(category: AlbertaAttraction['category']) {
@@ -89,6 +89,56 @@ export default function DestinationDetailsScreen() {
           </View>
 
           <Text style={styles.description}>{attraction.description}</Text>
+
+          {(attraction.operatorName || attraction.priceMinCad || attraction.priceMaxCad) && (
+            <View style={styles.operatorCard}>
+              {attraction.operatorName ? (
+                <View style={styles.operatorRow}>
+                  <Text style={styles.operatorLabel}>Operator</Text>
+                  <Text style={styles.operatorName}>{attraction.operatorName}</Text>
+                </View>
+              ) : null}
+
+              {(typeof attraction.priceMinCad === 'number' || typeof attraction.priceMaxCad === 'number') && (
+                <View style={styles.operatorRow}>
+                  <View style={styles.priceRowLeft}>
+                    <DollarSign size={16} color="#059669" />
+                    <Text style={styles.operatorLabel}>Pricing</Text>
+                  </View>
+                  <Text style={styles.priceRangeText}>
+                    {typeof attraction.priceMinCad === 'number' ? `${attraction.priceMinCad}` : '—'}
+                    {typeof attraction.priceMaxCad === 'number' ? `–${attraction.priceMaxCad}` : ''} CAD
+                  </Text>
+                </View>
+              )}
+
+              {attraction.pricingNotes ? (
+                <Text style={styles.pricingNotes}>{attraction.pricingNotes}</Text>
+              ) : null}
+
+              {attraction.operatorUrl ? (
+                <TouchableOpacity
+                  style={styles.operatorLinkBtn}
+                  onPress={async () => {
+                    try {
+                      const supported = await Linking.canOpenURL(attraction.operatorUrl!);
+                      if (!supported) {
+                        Alert.alert('Unable to open link', 'Please try again later.');
+                        return;
+                      }
+                      await Linking.openURL(attraction.operatorUrl!);
+                    } catch (e) {
+                      Alert.alert('Unable to open link', 'Please try again later.');
+                    }
+                  }}
+                  testID="visitOperator"
+                >
+                  <ExternalLink size={16} color="#111827" />
+                  <Text style={styles.operatorLinkText}>Visit Operator Website</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )}
         </View>
 
         {(attraction.safetyWarnings?.length || attraction.dangerousAnimals?.length) ? (
@@ -124,6 +174,18 @@ export default function DestinationDetailsScreen() {
             <View style={styles.transportPill}><Hotel size={16} color="#f97316" /><Text style={styles.transportText}>Stays</Text></View>
             <View style={styles.transportPill}><Car size={16} color="#10b981" /><Text style={styles.transportText}>Car rental</Text></View>
           </View>
+
+          {attraction.category === 'scenic-flight' && (
+            <TouchableOpacity
+              style={styles.requestFlightBtn}
+              onPress={() => handleAddToTrip(attraction)}
+              testID="requestFlight"
+            >
+              <Send size={16} color="#ffffff" />
+              <Text style={styles.requestFlightText}>Request a Flight</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity style={styles.addButton} onPress={() => handleAddToTrip(attraction)} testID="addToTrip">
             <Text style={styles.addButtonText}>Add to Trip Planner</Text>
           </TouchableOpacity>
@@ -149,6 +211,15 @@ const styles = StyleSheet.create({
   tag: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#f3f4f6', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16 },
   tagText: { fontSize: 12, color: '#374151', fontWeight: '600', textTransform: 'capitalize' },
   description: { fontSize: 16, color: '#374151', lineHeight: 22 },
+  operatorCard: { marginTop: 12, marginHorizontal: 16, backgroundColor: '#ffffff', borderRadius: 12, borderWidth: 1, borderColor: '#e5e7eb', padding: 12, gap: 8 },
+  operatorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  operatorLabel: { fontSize: 12, color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' },
+  operatorName: { fontSize: 14, color: '#111827', fontWeight: '700' },
+  priceRowLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  priceRangeText: { fontSize: 14, color: '#059669', fontWeight: '800' },
+  pricingNotes: { fontSize: 12, color: '#6b7280' },
+  operatorLinkBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', backgroundColor: '#f9fafb', borderWidth: 1, borderColor: '#e5e7eb', paddingHorizontal: 10, paddingVertical: 8, borderRadius: 10 },
+  operatorLinkText: { fontSize: 12, fontWeight: '800', color: '#111827' },
   alertsCard: { marginTop: 12, marginHorizontal: 16, backgroundColor: '#fff1f2', borderColor: '#fecdd3', borderWidth: 1, borderRadius: 12 },
   alertsHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
   alertsTitle: { fontSize: 16, fontWeight: '800', color: '#be123c' },
@@ -163,8 +234,10 @@ const styles = StyleSheet.create({
   transportRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
   transportPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#f3f4f6', borderRadius: 16, paddingHorizontal: 10, paddingVertical: 6 },
   transportText: { fontSize: 12, color: '#374151', fontWeight: '600' },
-  addButton: { marginTop: 16, backgroundColor: '#10b981', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+  addButton: { marginTop: 12, backgroundColor: '#10b981', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   addButtonText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
+  requestFlightBtn: { marginTop: 12, backgroundColor: '#2563eb', paddingVertical: 14, borderRadius: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  requestFlightText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
   notFound: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   notFoundTitle: { fontSize: 18, fontWeight: '600', color: '#111827', marginBottom: 12 },
   backButton: { backgroundColor: '#f3f4f6', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
