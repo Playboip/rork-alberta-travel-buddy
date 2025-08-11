@@ -469,6 +469,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromEdmonton: '4.5 hours',
     isHidden: false,
     tips: ['Reservations recommended', 'Try the bison dishes', 'Great wine selection'],
+    operatorUrl: 'https://thebison.ca/',
   },
   {
     id: 'f2',
@@ -507,6 +508,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1 hour',
     distanceFromEdmonton: '4 hours',
     isHidden: true,
+    operatorUrl: 'https://www.facebook.com/chuckwagoncafe/',
   },
   {
     id: 'f4',
@@ -526,6 +528,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1 hour',
     distanceFromEdmonton: '3.5 hours',
     isHidden: true,
+    operatorUrl: 'https://www.aspencrossing.com/dining',
   },
   {
     id: 'f5',
@@ -545,6 +548,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '5 hours',
     distanceFromEdmonton: '3.5 hours',
     isHidden: false,
+    operatorUrl: 'https://overlandermountainlodge.com/dining/',
   },
   {
     id: 'f6',
@@ -564,6 +568,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1 hour',
     distanceFromEdmonton: '4 hours',
     isHidden: false,
+    operatorUrl: 'https://longviewsteakhouse.com/',
   },
   {
     id: 'f7',
@@ -583,6 +588,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '4 hours',
     isHidden: true,
+    operatorUrl: 'https://www.silverslatearena.com/steakhouse',
   },
   {
     id: 'f8',
@@ -602,6 +608,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1 hour',
     distanceFromEdmonton: '3.5 hours',
     isHidden: true,
+    operatorUrl: 'https://www.crossingexperience.ca/',
   },
   {
     id: 'f9',
@@ -621,6 +628,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '3 hours',
     distanceFromEdmonton: '30 minutes',
     isHidden: false,
+    operatorUrl: 'https://dinechartier.com/',
   },
   {
     id: 'f10',
@@ -640,6 +648,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '4.5 hours',
     distanceFromEdmonton: '3.5 hours',
     isHidden: false,
+    operatorUrl: 'https://www.jasper-park-lodge.com/dine/orso-trattoria/',
   },
   {
     id: 'f11',
@@ -659,6 +668,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '2 hours',
     distanceFromEdmonton: '1.5 hours',
     isHidden: true,
+    operatorUrl: 'https://www.ellisbirdfarm.ca/',
   },
   {
     id: 'f12',
@@ -678,6 +688,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '3 hours',
     distanceFromEdmonton: '45 minutes',
     isHidden: true,
+    operatorUrl: 'https://prairiegardens.org/',
   },
   {
     id: 'f13',
@@ -697,6 +708,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '3 hours',
     distanceFromEdmonton: '20 minutes',
     isHidden: false,
+    operatorUrl: 'https://jacksburgershack.com/',
   },
   {
     id: 'f14',
@@ -716,6 +728,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '3 hours',
     isHidden: false,
+    operatorUrl: 'https://lastchancesaloon.ca/',
   },
   {
     id: 'f15',
@@ -735,6 +748,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '3 hours',
     distanceFromEdmonton: '5 hours',
     isHidden: true,
+    operatorUrl: 'https://campcookhouse.com/',
   },
   {
     id: 'f16',
@@ -754,6 +768,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '4.5 hours',
     isHidden: false,
+    operatorUrl: 'https://blakerestaurants.com/pd3/',
   },
   {
     id: 'f17',
@@ -773,6 +788,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '4.5 hours',
     isHidden: false,
+    operatorUrl: 'https://www.lefournil.ca/',
   },
   {
     id: 'f18',
@@ -811,6 +827,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '1.5 hours',
     isHidden: true,
+    operatorUrl: 'https://edgarfarms.com/',
   },
   {
     id: 'f20',
@@ -830,6 +847,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '1.5 hours',
     distanceFromEdmonton: '4 hours',
     isHidden: false,
+    operatorUrl: 'https://roysplace.ca/',
   },
   {
     id: 'f21',
@@ -849,6 +867,7 @@ export const ALBERTA_FOOD_GEMS: AlbertaAttraction[] = [
     distanceFromCalgary: '3 hours',
     distanceFromEdmonton: '6 hours',
     isHidden: true,
+    operatorUrl: 'https://zumswaterton.com/',
   },
 ];
 
