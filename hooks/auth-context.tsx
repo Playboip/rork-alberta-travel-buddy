@@ -159,12 +159,16 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       console.log('Testing database connection...');
       const { error: connectionError } = await supabase
         .from('profiles')
-        .select('count')
+        .select('id', { head: true, count: 'exact' })
         .limit(1);
       
       if (connectionError) {
-        console.error('Database connection failed:', connectionError);
-        throw new Error(`Database connection failed: ${connectionError.message}`);
+        const readable = (connectionError as any)?.message
+          ?? (typeof (connectionError as any) === 'string' ? (connectionError as any) : (() => {
+            try { return JSON.stringify(connectionError); } catch { return String(connectionError); }
+          })());
+        console.error('Database connection failed:', readable);
+        throw new Error(`Database connection failed: ${readable}`);
       }
       
       console.log('Database connection successful');
@@ -238,8 +242,11 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       }
 
     } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
+      const readable = (error as any)?.message ?? (() => {
+        try { return JSON.stringify(error); } catch { return String(error); }
+      })();
+      console.error('Registration error:', readable);
+      throw new Error(readable);
     } finally {
       setIsLoading(false);
     }
