@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MapPin, Calendar, Users, Plus, Trash2, Plane, Hotel, Car, UtensilsCrossed, Camera, Map, Train, Bus } from 'lucide-react-native';
+import { MapPin, Calendar, Users, Plus, Trash2, Hotel, Car, UtensilsCrossed, Camera, Map, Train, Bus } from 'lucide-react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { TripPlan, BookingItem } from '@/types/booking';
 import { Image } from 'expo-image';
@@ -12,23 +12,7 @@ interface TripPlannerItem extends BookingItem {
 }
 
 const mockAvailableItems: TripPlannerItem[] = [
-  {
-    id: '1',
-    type: 'flight',
-    name: 'Calgary to Vancouver',
-    description: 'Direct flight with Air Canada',
-    location: 'YYC to YVR',
-    price: 225,
-    currency: 'CAD',
-    image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=300&fit=crop',
-    rating: 4.3,
-    duration: '1h 30m',
-    availability: true,
-    provider: 'Air Canada',
-    features: ['Direct Flight', 'Meal Service', 'WiFi'],
-    selected: false,
-    tripDay: 1
-  },
+
   {
     id: '2',
     type: 'hotel',
@@ -113,8 +97,8 @@ const mockAvailableItems: TripPlannerItem[] = [
   {
     id: '7',
     type: 'bus',
-    name: 'Banff Airport Shuttle',
-    description: 'Comfortable shuttle from YYC to Banff',
+    name: 'Calgary — Banff Shuttle',
+    description: 'Comfortable scheduled shuttle service between Calgary and Banff',
     location: 'Calgary to Banff',
     price: 65,
     currency: 'CAD',
@@ -125,6 +109,22 @@ const mockAvailableItems: TripPlannerItem[] = [
     features: ['WiFi', 'Luggage'],
     selected: false,
     tripDay: 1
+  },
+  {
+    id: '8',
+    type: 'heli_tour',
+    name: 'Rockies Helicopter Scenic Tour',
+    description: '30-minute scenic heli-tour over the foothills and Rockies',
+    location: 'Kananaskis, AB',
+    price: 349,
+    currency: 'CAD',
+    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400&h=300&fit=crop',
+    rating: 4.9,
+    availability: true,
+    provider: 'Rockies Heli Canada',
+    features: ['Window Seats', 'Headsets', 'Photo Stops'],
+    selected: false,
+    tripDay: 2
   }
 ];
 
@@ -208,12 +208,14 @@ export default function TripPlannerScreen() {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'hotel': return <Hotel color="#f97316" size={20} />;
-      case 'flight': return <Plane color="#3b82f6" size={20} />;
+      // No flights in Alberta-focused planner
+      
       case 'car_rental': return <Car color="#10b981" size={20} />;
       case 'restaurant': return <UtensilsCrossed color="#ef4444" size={20} />;
       case 'tour': return <Map color="#8b5cf6" size={20} />;
       case 'train': return <Train color="#0ea5e9" size={20} />;
       case 'bus': return <Bus color="#22c55e" size={20} />;
+      case 'heli_tour': return <Camera color="#f59e0b" size={20} />;
       case 'experience': return <Camera color="#f59e0b" size={20} />;
       default: return <MapPin color="#6b7280" size={20} />;
     }
@@ -386,7 +388,7 @@ export default function TripPlannerScreen() {
     <View style={styles.stepContent}>
       <Text style={styles.sectionTitle}>Select Trip Items</Text>
       <Text style={styles.sectionSubtitle}>
-        Choose flights, hotels, activities, and more for your trip
+        Choose trains, shuttles, car rentals, tours, and stays across Alberta
       </Text>
 
       <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
@@ -525,8 +527,8 @@ export default function TripPlannerScreen() {
           testID="tripPlannerHeader"
         >
           <Plus color="#ffffff" size={32} />
-          <Text style={styles.headerTitle}>Plan Your Trip</Text>
-          <Text style={styles.headerSubtitle}>Create a complete travel package</Text>
+          <Text style={styles.headerTitle}>Plan Your Alberta Trip</Text>
+          <Text style={styles.headerSubtitle}>Build a car, rail, shuttle, or heli-tour itinerary</Text>
         </LinearGradient>
 
         {renderStepIndicator()}

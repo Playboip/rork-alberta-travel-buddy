@@ -119,61 +119,7 @@ const mockBookingItems: BookingItem[] = [
       type: 'seasonal'
     }
   },
-  // Flights
-  {
-    id: '3',
-    type: 'flight',
-    name: 'Calgary to Vancouver',
-    description: 'Direct flight with Air Canada',
-    location: 'YYC to YVR',
-    price: 180,
-    originalPrice: 225,
-    currency: 'CAD',
-    image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=300&fit=crop',
-    rating: 4.3,
-    duration: '1h 30m',
-    availability: true,
-    provider: 'Air Canada',
-    features: ['Direct Flight', 'Meal Service', 'WiFi', 'Entertainment'],
-    departure: 'Calgary (YYC)',
-    arrival: 'Vancouver (YVR)',
-    flightNumber: 'AC 219',
-    airline: 'Air Canada',
-    discount: {
-      percentage: 20,
-      code: 'FLY20',
-      validUntil: '2024-12-01',
-      description: 'Limited time flight discount!',
-      type: 'partner'
-    }
-  },
-  {
-    id: '4',
-    type: 'flight',
-    name: 'Toronto to Calgary',
-    description: 'Direct flight with WestJet',
-    location: 'YYZ to YYC',
-    price: 151,
-    originalPrice: 189,
-    currency: 'CAD',
-    image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=300&fit=crop',
-    rating: 4.1,
-    duration: '4h 15m',
-    availability: true,
-    provider: 'WestJet',
-    features: ['Direct Flight', 'Snack Service', 'WiFi'],
-    departure: 'Toronto (YYZ)',
-    arrival: 'Calgary (YYC)',
-    flightNumber: 'WS 705',
-    airline: 'WestJet',
-    discount: {
-      percentage: 20,
-      code: 'LASTMIN20',
-      validUntil: '2024-08-15',
-      description: 'Last minute booking special!',
-      type: 'last_minute'
-    }
-  },
+
   // Car Rentals
   {
     id: '5',
@@ -205,7 +151,7 @@ const mockBookingItems: BookingItem[] = [
     type: 'car_rental',
     name: 'Luxury Sedan - BMW 3 Series',
     description: 'Premium comfort for city exploration',
-    location: 'Vancouver, BC',
+    location: 'Edmonton, AB',
     price: 149,
     currency: 'CAD',
     image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&h=300&fit=crop',
@@ -359,7 +305,7 @@ export default function BookingSearchScreen() {
     location: '',
     guests: 2,
   });
-  const [activeCategory, setActiveCategory] = useState<'all' | 'hotel' | 'hostel' | 'apartment' | 'villa' | 'cabin' | 'activity' | 'flight' | 'car_rental' | 'tour' | 'experience' | 'restaurant' | 'uber' | 'meal_deal'>('all');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'hotel' | 'hostel' | 'apartment' | 'villa' | 'cabin' | 'activity' | 'car_rental' | 'tour' | 'experience' | 'restaurant' | 'uber' | 'meal_deal' | 'train' | 'bus' | 'heli_tour'>('all');
   const [bookingItems] = useState<BookingItem[]>(mockBookingItems);
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -369,7 +315,9 @@ export default function BookingSearchScreen() {
     { id: 'hostel', name: 'Hostels', icon: '🏠' },
     { id: 'apartment', name: 'Apartments', icon: '🏢' },
     { id: 'cabin', name: 'Cabins', icon: '🏘️' },
-    { id: 'flight', name: 'Flights', icon: '✈️' },
+    { id: 'train', name: 'Trains', icon: '🚆' },
+    { id: 'bus', name: 'Shuttles', icon: '🚌' },
+    { id: 'heli_tour', name: 'Heli-Tours', icon: '🚁' },
     { id: 'car_rental', name: 'Cars', icon: '🚗' },
     { id: 'uber', name: 'Rides', icon: '🚕' },
     { id: 'tour', name: 'Tours', icon: '🗺️' },
@@ -433,8 +381,8 @@ export default function BookingSearchScreen() {
           style={styles.header}
         >
           <Search color="#ffffff" size={32} />
-          <Text style={styles.headerTitle}>Book Your Trip</Text>
-          <Text style={styles.headerSubtitle}>Complete trip booking - flights, hotels, cars, tours & dining</Text>
+          <Text style={styles.headerTitle}>Book Alberta Experiences</Text>
+          <Text style={styles.headerSubtitle}>Stays, cars, rail, shuttles, tours & dining — no flights</Text>
         </LinearGradient>
 
         {/* Search Bar */}
