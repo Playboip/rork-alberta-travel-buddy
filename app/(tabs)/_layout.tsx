@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Compass, Calendar, Shield, User, Users, CreditCard, Percent } from "lucide-react-native";
+import { Compass, Calendar, Shield, User, Users, CreditCard, Percent, Utensils } from "lucide-react-native";
 import React from "react";
 
 import Colors from "@/constants/colors";
@@ -51,6 +51,13 @@ export default function TabLayout() {
         options={{
           title: "Deals",
           tabBarIcon: ({ color, size }) => <Percent color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="dining"
+        options={{
+          title: "Dining",
+          tabBarIcon: ({ color, size }) => <Utensils color={color} size={size} />,
         }}
       />
       <Tabs.Screen
