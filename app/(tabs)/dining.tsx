@@ -999,6 +999,7 @@ export default function DiningScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Alberta Dining</Text>
         <Text style={styles.subtitle}>Discover the best restaurants across Alberta</Text>
+        <Text style={styles.metaNote}>All hours are shown in Mountain Time (MT). Seasonal hours may vary.</Text>
       </View>
 
       <View style={styles.filtersContainer}>
@@ -1006,6 +1007,7 @@ export default function DiningScreen() {
           {AREAS.map((area) => (
             <TouchableOpacity
               key={area}
+              testID={`area-filter-${area}`}
               style={[styles.filterButton, selectedArea === area && styles.filterButtonActive]}
               onPress={() => setSelectedArea(area)}
             >
@@ -1020,6 +1022,7 @@ export default function DiningScreen() {
           {CUISINES.map((cuisine) => (
             <TouchableOpacity
               key={cuisine}
+              testID={`cuisine-filter-${cuisine}`}
               style={[styles.filterButton, selectedCuisine === cuisine && styles.filterButtonActive]}
               onPress={() => setSelectedCuisine(cuisine)}
             >
@@ -1033,7 +1036,7 @@ export default function DiningScreen() {
 
       <ScrollView style={styles.restaurantsList}>
         {filteredRestaurants.map((restaurant) => (
-          <View key={restaurant.id} style={styles.restaurantCard}>
+          <View key={restaurant.id} style={styles.restaurantCard} testID={`restaurant-${restaurant.id}`}>
             <View style={styles.restaurantHeader}>
               <View style={styles.restaurantInfo}>
                 <Text style={styles.restaurantName}>{restaurant.name}</Text>
@@ -1058,8 +1061,8 @@ export default function DiningScreen() {
             <View style={styles.hoursContainer}>
               <Clock size={16} color="#666" />
               <View style={styles.hoursText}>
-                <Text style={styles.hoursLabel}>Mon-Fri: {restaurant.hours.weekdays}</Text>
-                <Text style={styles.hoursLabel}>Sat-Sun: {restaurant.hours.weekends}</Text>
+                <Text style={styles.hoursLabel}>Mon-Fri: {restaurant.hours.weekdays} MT</Text>
+                <Text style={styles.hoursLabel}>Sat-Sun: {restaurant.hours.weekends} MT</Text>
                 {restaurant.hours.seasonal && (
                   <Text style={styles.seasonalNote}>{restaurant.hours.seasonal}</Text>
                 )}
@@ -1078,6 +1081,7 @@ export default function DiningScreen() {
             <View style={styles.actionsContainer}>
               <TouchableOpacity
                 style={styles.actionButton}
+                testID={`call-${restaurant.id}`}
                 onPress={() => handleCall(restaurant.phone)}
               >
                 <Phone size={18} color="#fff" />
@@ -1086,6 +1090,7 @@ export default function DiningScreen() {
               
               <TouchableOpacity
                 style={[styles.actionButton, styles.websiteButton]}
+                testID={`website-${restaurant.id}`}
                 onPress={() => handleWebsite(restaurant.website)}
               >
                 <ExternalLink size={18} color="#007AFF" />
@@ -1119,6 +1124,11 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#6b7280',
+  },
+  metaNote: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
   },
   filtersContainer: {
     backgroundColor: '#fff',

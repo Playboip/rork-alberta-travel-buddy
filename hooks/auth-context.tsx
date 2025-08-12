@@ -157,21 +157,38 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       
       // Test database connection first
       console.log('Testing database connection...');
-      const { error: connectionError } = await supabase
-        .from('profiles')
-        .select('id', { head: true, count: 'exact' })
-        .limit(1);
-      
-      if (connectionError) {
-        const readable = (connectionError as any)?.message
-          ?? (typeof (connectionError as any) === 'string' ? (connectionError as any) : (() => {
-            try { return JSON.stringify(connectionError); } catch { return String(connectionError); }
-          })());
-        console.error('Database connection failed:', readable);
-        throw new Error(`Database connection failed: ${readable}`);
+      try {
+        const { error: connectionError } = await supabase
+          .from('profiles')
+          .select('id', { head: true, count: 'exact' })
+          .limit(1);
+
+        if (connectionError) {
+          const readable = (connectionError as any)?.message
+            ?? (typeof (connectionError as any) === 'string' ? (connectionError as any) : (() => {
+              try { return JSON.stringify(connectionError); } catch { return String(connectionError); }
+            })());
+          console.warn('Database connection check reported error:', readable);
+          if (
+            readable?.toString().toLowerCase().includes('failed to fetch') ||
+            readable?.toString().toLowerCase().includes('network') ||
+            (connectionError as any)?.name === 'TypeError'
+          ) {
+            console.warn('Network issue detected during preflight check. Proceeding with signup and will create profile later.');
+          } else {
+            throw new Error(`Database connection failed: ${readable}`);
+          }
+        } else {
+          console.log('Database connection successful');
+        }
+      } catch (precheckErr) {
+        const msg = (precheckErr as any)?.message ?? String(precheckErr);
+        if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('network')) {
+          console.warn('Network error on connection precheck. Continuing registration.');
+        } else {
+          throw precheckErr;
+        }
       }
-      
-      console.log('Database connection successful');
 
       // Check if user already exists
       console.log('Checking if user already exists...');
@@ -220,8 +237,12 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       console.log('User created successfully:', data.user.id);
 
-      // Create user profile - try multiple approaches
-      await createUserProfile(data.user.id, email, name, location);
+      // Create user profile - try multiple approaches (best-effort even if network flaky)
+      try {
+        await createUserProfile(data.user.id, email, name, location);
+      } catch (profileErr) {
+        console.warn('Non-fatal: profile creation deferred. Reason:', (profileErr as any)?.message ?? String(profileErr));
+      }
 
       // Handle different registration scenarios
       if (data.session) {
@@ -246,6 +267,9 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
         try { return JSON.stringify(error); } catch { return String(error); }
       })();
       console.error('Registration error:', readable);
+      if (typeof readable === 'string' && (readable.toLowerCase().includes('failed to fetch') || readable.toLowerCase().includes('network'))) {
+        throw new Error('Unable to reach server. Please check your internet connection and try again.');
+      }
       throw new Error(readable);
     } finally {
       setIsLoading(false);
