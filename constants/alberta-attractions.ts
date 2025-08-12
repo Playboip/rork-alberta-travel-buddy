@@ -15,6 +15,7 @@ export interface AlbertaAttraction {
     | 'accommodation'
     | 'food'
     | 'camping'
+    | 'rv-camping'
     | 'fishing'
     | 'waterfall'
     | 'birdwatching'
@@ -23,7 +24,13 @@ export interface AlbertaAttraction {
     | 'foodtruck'
     | 'scenic-flight'
     | 'winery'
-    | 'winery-tour';
+    | 'winery-tour'
+    | 'ski'
+    | 'snowmobile'
+    | 'ice-skating'
+    | 'horseback'
+    | 'show'
+    | 'winter-festival';
   difficulty?: 'easy' | 'moderate' | 'difficult' | 'expert';
   season: string;
   image: string;
