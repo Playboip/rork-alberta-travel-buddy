@@ -199,11 +199,334 @@ const RESTAURANTS: Restaurant[] = [
     priceRange: '$$$',
     description: 'Farm-to-table dining in peaceful rural setting',
     specialties: ['Local Ingredients', 'Seasonal Menu', 'Spa Cuisine']
+  },
+  {
+    id: '11',
+    name: 'Chuckwagon Cafe',
+    area: 'Rural - Turner Valley',
+    phone: '(403) 933-7797',
+    website: 'https://chuckwagoncafe.ca',
+    hours: {
+      weekdays: '8:00 AM - 8:00 PM',
+      weekends: '8:00 AM - 9:00 PM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'Cafe',
+    rating: 4.6,
+    priceRange: '$$',
+    description: 'A bright red barn-turned-café serving burgers with hand-ground aged beef, scratch-made fries, and scratch-baked pies in a charming countryside setting',
+    specialties: ['Hand-ground Aged Beef Burgers', 'Scratch-made Fries', 'Scratch-baked Pies']
+  },
+  {
+    id: '12',
+    name: 'Dining Car at Aspen Crossing',
+    area: 'Rural - Mossleigh',
+    phone: '(403) 934-3500',
+    website: 'https://aspencrossing.ca',
+    hours: {
+      weekdays: '11:00 AM - 8:00 PM',
+      weekends: '10:00 AM - 9:00 PM',
+      seasonal: 'Seasonal operation, hours may vary'
+    },
+    cuisine: 'Comfort Food',
+    rating: 4.4,
+    priceRange: '$$',
+    description: 'Dine inside a restored 1887 railcar, enjoying comfort food surrounded by nostalgic train-era vibes',
+    specialties: ['Historic Railcar Dining', 'Comfort Food', 'Train-era Atmosphere']
+  },
+  {
+    id: '13',
+    name: 'The Overlander Mountain Lodge',
+    area: 'Rural - Jasper East',
+    phone: '(780) 866-2330',
+    website: 'https://overlander.ca',
+    hours: {
+      weekdays: '6:00 PM - 9:00 PM',
+      weekends: '6:00 PM - 9:00 PM',
+      seasonal: 'Seasonal operation May-October, hours may vary'
+    },
+    cuisine: 'Fine Dining',
+    rating: 4.7,
+    priceRange: '$$$$',
+    description: 'A lodge-style restaurant offering refined, seasonal cuisine paired with sweeping views of the Miette Range and Athabasca Valley',
+    specialties: ['Seasonal Cuisine', 'Mountain Views', 'Lodge Atmosphere']
+  },
+  {
+    id: '14',
+    name: 'Longview Steakhouse',
+    area: 'Rural - Longview',
+    phone: '(403) 558-3336',
+    website: 'https://longviewsteakhouse.com',
+    hours: {
+      weekdays: '5:00 PM - 9:00 PM',
+      weekends: '5:00 PM - 10:00 PM',
+      seasonal: 'Closed Mondays, hours may vary seasonally'
+    },
+    cuisine: 'Steakhouse',
+    rating: 4.5,
+    priceRange: '$$$',
+    description: 'Elevated steakhouse fare paired with a classic rural backdrop—perfect for a memorable, low-key night out',
+    specialties: ['Premium Steaks', 'Rural Atmosphere', 'Classic Fare']
+  },
+  {
+    id: '15',
+    name: 'Silver Slate Steakhouse',
+    area: 'Rural - Stavely',
+    phone: '(403) 549-2233',
+    website: 'https://silverslatesteakhouse.ca',
+    hours: {
+      weekdays: '5:00 PM - 9:00 PM',
+      weekends: '5:00 PM - 10:00 PM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'Steakhouse',
+    rating: 4.4,
+    priceRange: '$$$',
+    description: 'Tucked off the beaten path beside an equestrian centre, this cozy steakhouse serves hearty, old-fashioned meals made to impress',
+    specialties: ['Hearty Steaks', 'Equestrian Setting', 'Old-fashioned Meals']
+  },
+  {
+    id: '16',
+    name: 'The Crossing at Ghost River',
+    area: 'Rural - Near Cochrane',
+    phone: '(403) 932-6985',
+    website: 'https://ghostrivercrossing.com',
+    hours: {
+      weekdays: 'By Reservation Only',
+      weekends: 'By Reservation Only',
+      seasonal: 'Occasional public dinners, seasonal operation'
+    },
+    cuisine: 'Fine Dining',
+    rating: 4.8,
+    priceRange: '$$$$',
+    description: 'A secluded retreat with occasional public dinners featuring seasonal dishes served in a serene forested setting—ideal for special occasions',
+    specialties: ['Seasonal Dishes', 'Forest Setting', 'Special Occasions']
+  },
+  {
+    id: '17',
+    name: 'Chartier',
+    area: 'Rural - Beaumont',
+    phone: '(780) 929-3202',
+    website: 'https://chartierrestaurant.ca',
+    hours: {
+      weekdays: '5:00 PM - 9:00 PM',
+      weekends: '5:00 PM - 10:00 PM',
+      seasonal: 'Closed Mondays, hours may vary seasonally'
+    },
+    cuisine: 'Québecois',
+    rating: 4.6,
+    priceRange: '$$$',
+    description: 'A Québecois-inspired spot just outside Edmonton, known for its rustic vibe, house-baked bread, generous portions, and delightful cocktails',
+    specialties: ['House-baked Bread', 'Québecois Cuisine', 'Craft Cocktails']
+  },
+  {
+    id: '18',
+    name: 'Orso Trattoria',
+    area: 'Jasper',
+    phone: '(780) 852-3301',
+    website: 'https://orsotrattoria.com',
+    hours: {
+      weekdays: '5:00 PM - 10:00 PM',
+      weekends: '5:00 PM - 10:00 PM',
+      seasonal: 'Seasonal operation, hours may vary'
+    },
+    cuisine: 'Italian',
+    rating: 4.7,
+    priceRange: '$$$',
+    description: 'Located lakeside, this Northern Italian gem serves handmade pasta and imported ingredients, enhanced by mountain views and even Peroni on tap',
+    specialties: ['Handmade Pasta', 'Imported Ingredients', 'Lakeside Views']
+  },
+  {
+    id: '19',
+    name: 'Ellis Bird Farm Tea House',
+    area: 'Rural - Lacombe',
+    phone: '(403) 885-4477',
+    website: 'https://ellisbirdfarm.ca',
+    hours: {
+      weekdays: '10:00 AM - 4:00 PM',
+      weekends: '10:00 AM - 5:00 PM',
+      seasonal: 'Seasonal operation May-September, hours may vary'
+    },
+    cuisine: 'Cafe',
+    rating: 4.3,
+    priceRange: '$',
+    description: 'More than a café, this working bird conservation farm offers simple local fare and wicker-basketed treats perfect for exploring the grounds',
+    specialties: ['Local Fare', 'Bird Conservation', 'Farm Setting']
+  },
+  {
+    id: '20',
+    name: 'Prairie Gardens Farm Kitchen',
+    area: 'Rural - Bon Accord',
+    phone: '(780) 921-2272',
+    website: 'https://prairiegardens.ca',
+    hours: {
+      weekdays: '6:00 PM - 9:00 PM',
+      weekends: '6:00 PM - 9:00 PM',
+      seasonal: 'Seasonal dinners, reservation required'
+    },
+    cuisine: 'Farm-to-Table',
+    rating: 4.5,
+    priceRange: '$$$',
+    description: 'A farm-to-table kitchen that hosts dinners cooked with produce from its own community-supported agriculture (CSA) gardens',
+    specialties: ['CSA Gardens', 'Farm-fresh Produce', 'Community Dinners']
+  },
+  {
+    id: '21',
+    name: 'Jack\'s Burger Shack',
+    area: 'St. Albert',
+    phone: '(780) 460-3344',
+    website: 'https://jacksburgershack.ca',
+    hours: {
+      weekdays: '11:00 AM - 9:00 PM',
+      weekends: '11:00 AM - 10:00 PM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'Burgers',
+    rating: 4.4,
+    priceRange: '$$',
+    description: 'Renowned for burgers on custom-baked buns and indulgent milkshakes (including cereal, orange creamsicle, Nutella flavors)—a local favorite with a playful twist',
+    specialties: ['Custom-baked Buns', 'Specialty Milkshakes', 'Creative Flavors']
+  },
+  {
+    id: '22',
+    name: 'Last Chance Saloon',
+    area: 'Rural - Wayne (Near Drumheller)',
+    phone: '(403) 823-2201',
+    website: 'https://lastchancesaloon.ca',
+    hours: {
+      weekdays: '4:00 PM - 11:00 PM',
+      weekends: '12:00 PM - 12:00 AM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'Pub Food',
+    rating: 4.6,
+    priceRange: '$$',
+    description: 'A tiny, character-rich saloon housed in a 1913 hotel, featuring live music, homemade pies, mason-jar cocktails, and quirky décor like gunshot holes in the walls',
+    specialties: ['Homemade Pies', 'Mason-jar Cocktails', 'Live Music']
+  },
+  {
+    id: '23',
+    name: 'Camp Cookhouse and General Store',
+    area: 'Rural - Elkwater (Cypress Hills)',
+    phone: '(403) 893-3833',
+    website: 'https://campcookhouse.ca',
+    hours: {
+      weekdays: '7:00 AM - 8:00 PM',
+      weekends: '7:00 AM - 9:00 PM',
+      seasonal: 'Seasonal operation, hours may vary'
+    },
+    cuisine: 'Comfort Food',
+    rating: 4.3,
+    priceRange: '$$',
+    description: 'A cozy camp-style café serving homemade meals—from bacon and bread to lunch and dinner—in a nostalgic, charming general-store atmosphere',
+    specialties: ['Homemade Meals', 'General Store Atmosphere', 'Camp-style Cooking']
+  },
+  {
+    id: '24',
+    name: 'PD3 by Blake',
+    area: 'Canmore',
+    phone: '(403) 678-6111',
+    website: 'https://pd3byblake.com',
+    hours: {
+      weekdays: '11:30 AM - 9:00 PM',
+      weekends: '11:30 AM - 10:00 PM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'Asian Street Food',
+    rating: 4.4,
+    priceRange: '$$',
+    description: 'Once a food bus turned permanent eatery, PD3 serves Asian-style street eats from a second-level outdoor seating area with a fun, casual vibe',
+    specialties: ['Asian Street Food', 'Outdoor Seating', 'Casual Atmosphere']
+  },
+  {
+    id: '25',
+    name: 'Le Fournil',
+    area: 'Canmore',
+    phone: '(403) 678-8885',
+    website: 'https://lefournil.ca',
+    hours: {
+      weekdays: '7:00 AM - 6:00 PM',
+      weekends: '7:00 AM - 6:00 PM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'French Bakery',
+    rating: 4.5,
+    priceRange: '$$',
+    description: 'A delightful French bakery offering croissants, baguettes, quiches, and more—the perfect pit stop for breakfast or a trail snack',
+    specialties: ['Fresh Croissants', 'Artisan Baguettes', 'French Pastries']
+  },
+  {
+    id: '26',
+    name: 'The Westwood',
+    area: 'Rural - Black Diamond',
+    phone: '(403) 933-2226',
+    website: 'https://thewestwoodcafe.ca',
+    hours: {
+      weekdays: '8:00 AM - 4:00 PM',
+      weekends: '8:00 AM - 5:00 PM',
+      seasonal: 'Summer market next door, hours may vary seasonally'
+    },
+    cuisine: 'Cafe',
+    rating: 4.3,
+    priceRange: '$$',
+    description: 'Trendy café featuring salads, sandwiches, farmers\' plates, and a summer makers-and-growers market right next door',
+    specialties: ['Farmers\' Plates', 'Fresh Salads', 'Local Market']
+  },
+  {
+    id: '27',
+    name: 'Edgar Farms',
+    area: 'Rural - Innisfail',
+    phone: '(403) 227-5525',
+    website: 'https://edgarfarms.com',
+    hours: {
+      weekdays: '9:00 AM - 6:00 PM',
+      weekends: '9:00 AM - 6:00 PM',
+      seasonal: 'Seasonal produce availability, hours may vary'
+    },
+    cuisine: 'Farm Store',
+    rating: 4.6,
+    priceRange: '$$',
+    description: 'A family-run farm store known for fresh produce, grass-fed beef, Saskatoon berry and rhubarb pies, and preserves—a perfect rural treasure trove',
+    specialties: ['Grass-fed Beef', 'Saskatoon Berry Pies', 'Fresh Preserves']
+  },
+  {
+    id: '28',
+    name: 'Roy\'s Place',
+    area: 'Rural - Claresholm',
+    phone: '(403) 625-3381',
+    website: 'https://roysplace.ca',
+    hours: {
+      weekdays: '6:00 AM - 8:00 PM',
+      weekends: '6:00 AM - 8:00 PM',
+      seasonal: 'Hours may vary seasonally'
+    },
+    cuisine: 'Diner',
+    rating: 4.7,
+    priceRange: '$',
+    description: 'Famous highway stop celebrated for massive cinnamon buns the size of dinner plates, complete with take-home cream cheese frosting tubs',
+    specialties: ['Giant Cinnamon Buns', 'Cream Cheese Frosting', 'Highway Classic']
+  },
+  {
+    id: '29',
+    name: 'Zum\'s Eatery and Mercantile',
+    area: 'Rural - Waterton',
+    phone: '(403) 859-2388',
+    website: 'https://zumseatery.com',
+    hours: {
+      weekdays: '11:00 AM - 8:00 PM',
+      weekends: '11:00 AM - 9:00 PM',
+      seasonal: 'Seasonal operation May-September, hours may vary'
+    },
+    cuisine: 'Comfort Food',
+    rating: 4.5,
+    priceRange: '$$',
+    description: 'Hidden gem in a tiny town, serving beloved fried chicken and homemade pie in a relaxed seasonal setting',
+    specialties: ['Fried Chicken', 'Homemade Pie', 'Small Town Charm']
   }
 ];
 
-const AREAS = ['All Areas', 'Banff', 'Calgary', 'Canmore', 'Jasper', 'Lake Louise', 'Rural'];
-const CUISINES = ['All Cuisines', 'Canadian', 'Fine Dining', 'Contemporary', 'Fondue', 'Steakhouse', 'Pub Food', 'Brewpub', 'Farm-to-Table'];
+const AREAS = ['All Areas', 'Banff', 'Calgary', 'Canmore', 'Jasper', 'Lake Louise', 'St. Albert', 'Rural'];
+const CUISINES = ['All Cuisines', 'Canadian', 'Fine Dining', 'Contemporary', 'Fondue', 'Steakhouse', 'Pub Food', 'Brewpub', 'Farm-to-Table', 'Cafe', 'Comfort Food', 'Québecois', 'Italian', 'Burgers', 'Asian Street Food', 'French Bakery', 'Farm Store', 'Diner'];
 
 export default function DiningScreen() {
   const [selectedArea, setSelectedArea] = useState<string>('All Areas');
@@ -213,6 +536,7 @@ export default function DiningScreen() {
     const areaMatch = selectedArea === 'All Areas' || 
       restaurant.area.toLowerCase().includes(selectedArea.toLowerCase()) ||
       (selectedArea === 'Calgary' && restaurant.area.includes('Calgary')) ||
+      (selectedArea === 'St. Albert' && restaurant.area.includes('St. Albert')) ||
       (selectedArea === 'Rural' && restaurant.area.includes('Rural'));
     
     const cuisineMatch = selectedCuisine === 'All Cuisines' || restaurant.cuisine === selectedCuisine;
