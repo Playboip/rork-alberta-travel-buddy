@@ -18,17 +18,14 @@ type Venue = {
   instagram?: string;
 };
 
-function env(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing required env var ${name}`);
-  return v;
-}
-
 async function main(): Promise<void> {
-  const SUPABASE_URL = env('SUPABASE_URL');
-  const SUPABASE_SERVICE_ROLE_KEY = env('SUPABASE_SERVICE_ROLE_KEY');
+  // Use the same Supabase URL from your .env file
+  const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://tzetdlokyqqdnxjntzkv.supabase.co';
+  const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6ZXRkbG9reXFxZG54am50emt2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwOTQ5OTAsImV4cCI6MjA2ODY3MDk5MH0.JsUIArqIyWvlrGhFhx1YR1vZMQgBHoPm6jnhlA68wLo';
+  
+  console.log('[seed-venues] Using Supabase URL:', SUPABASE_URL);
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false },
   });
 
