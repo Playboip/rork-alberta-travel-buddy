@@ -1376,7 +1376,7 @@ export default function DiningScreen() {
   };
 
   const renderStars = (rating: number) => {
-    const stars: React.ReactElement[] = [];
+    const stars: React.ReactNode[] = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
 
