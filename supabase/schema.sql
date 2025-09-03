@@ -340,3 +340,36 @@ CREATE TRIGGER on_auth_user_created
 GRANT USAGE ON SCHEMA public TO authenticated, anon;
 GRANT ALL ON public.profiles TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
+
+-- Venues master table
+CREATE TABLE IF NOT EXISTS public.venues (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  city TEXT NOT NULL,
+  region TEXT DEFAULT 'Alberta' NOT NULL,
+  category TEXT NOT NULL, -- e.g. 'speakeasy', 'restaurant', 'bar', 'cafe'
+  type TEXT, -- sub-type like 'tiki', 'izakaya', 'wine bar'
+  address TEXT,
+  how_to_find TEXT,
+  vibe TEXT,
+  known_for TEXT,
+  description TEXT,
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  website TEXT,
+  instagram TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(name, city)
+);
+
+ALTER TABLE public.venues ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can view venues" ON public.venues;
+CREATE POLICY "Anyone can view venues" ON public.venues
+  FOR SELECT USING (true);
+
+-- Intentionally no insert/update/delete policies for public. Use service_role for admin seeding.
+
+CREATE INDEX IF NOT EXISTS idx_venues_city ON public.venues(city);
+CREATE INDEX IF NOT EXISTS idx_venues_category ON public.venues(category);
