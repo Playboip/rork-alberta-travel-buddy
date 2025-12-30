@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin, Phone, Clock, ExternalLink, Star } from 'lucide-react-native';
+import { trpc } from '@/lib/trpc';
 
 interface Restaurant {
   id: string;
@@ -27,6 +29,27 @@ interface Restaurant {
   priceRange: string;
   description: string;
   specialties: string[];
+}
+
+// Venue interface from Supabase
+interface Venue {
+  id: string;
+  name: string;
+  city: string;
+  region?: string;
+  category: string;
+  type?: string;
+  address?: string;
+  how_to_find?: string;
+  vibe?: string;
+  known_for?: string;
+  description?: string;
+  latitude?: number;
+  longitude?: number;
+  website?: string;
+  instagram?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 const RESTAURANTS: Restaurant[] = [
@@ -1349,8 +1372,44 @@ const CUISINES = [
 export default function DiningScreen() {
   const [selectedArea, setSelectedArea] = useState<string>('All Areas');
   const [selectedCuisine, setSelectedCuisine] = useState<string>('All Cuisines');
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  
+  // Fetch restaurants from Supabase via tRPC
+  const { data: restaurantData, isLoading, error } = trpc.restaurants.list.useQuery();
 
-  const filteredRestaurants = RESTAURANTS.filter((restaurant) => {
+  // Transform Supabase venue data to Restaurant format
+  useEffect(() => {
+    if (restaurantData?.success && restaurantData.restaurants && restaurantData.restaurants.length > 0) {
+      // Successfully fetched data from Supabase
+      const transformedRestaurants: Restaurant[] = restaurantData.restaurants.map((venue: Venue) => ({
+        id: venue.id,
+        name: venue.name,
+        area: venue.city,
+        phone: '', // Not stored in venues table yet
+        website: venue.website || '',
+        hours: {
+          weekdays: 'Check website for hours',
+          weekends: 'Check website for hours',
+          seasonal: 'Hours may vary seasonally',
+        },
+        cuisine: venue.type || 'Restaurant',
+        rating: 4.5, // Default rating
+        priceRange: '$$',
+        description: venue.description || venue.known_for || 'Great dining experience',
+        specialties: venue.known_for ? venue.known_for.split(',').map(s => s.trim()) : [],
+      }));
+      setRestaurants(transformedRestaurants);
+    } else if (!isLoading && (error || !restaurantData?.success || restaurantData?.restaurants?.length === 0)) {
+      // Fallback to hardcoded data if:
+      // - There's an error fetching from Supabase
+      // - The fetch was not successful
+      // - No data in Supabase
+      // - Not currently loading
+      setRestaurants(RESTAURANTS);
+    }
+  }, [restaurantData, isLoading, error]);
+
+  const filteredRestaurants = restaurants.filter((restaurant) => {
     const areaMatch =
       selectedArea === 'All Areas' ||
       restaurant.area.toLowerCase().includes(selectedArea.toLowerCase()) ||
@@ -1398,6 +1457,21 @@ export default function DiningScreen() {
           All hours are shown in Mountain Time (MT). Seasonal hours may vary.
         </Text>
       </View>
+
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2563eb" />
+          <Text style={styles.loadingText}>Loading restaurants...</Text>
+        </View>
+      )}
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>
+            Unable to load restaurants. Showing cached data.
+          </Text>
+        </View>
+      )}
 
       <View style={styles.filtersContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
@@ -1505,6 +1579,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#6b7280',
+  },
+  errorContainer: {
+    backgroundColor: '#fef2f2',
+    padding: 12,
+    margin: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#dc2626',
+    textAlign: 'center',
   },
   header: {
     padding: 20,
