@@ -29,43 +29,34 @@ export default publicProcedure
     })
   )
   .query(async ({ input }) => {
-    try {
-      // Build query
-      let query = supabase
-        .from('venues')
-        .select('*')
-        .eq('category', 'restaurant')
-        .order('name', { ascending: true });
+    // Build query
+    let query = supabase
+      .from('venues')
+      .select('*')
+      .eq('category', 'restaurant')
+      .order('name', { ascending: true });
 
-      // Apply filters if provided
-      if (input.city) {
-        query = query.ilike('city', `%${input.city}%`);
-      }
-
-      if (input.cuisine) {
-        query = query.ilike('type', `%${input.cuisine}%`);
-      }
-
-      // Limit results
-      query = query.limit(input.limit);
-
-      const { data, error } = await query;
-
-      if (error) {
-        throw new Error(`Failed to fetch restaurants: ${error.message}`);
-      }
-
-      return {
-        success: true,
-        count: data?.length || 0,
-        restaurants: data || [],
-      };
-    } catch (error) {
-      return {
-        success: false,
-        count: 0,
-        restaurants: [],
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+    // Apply filters if provided
+    if (input.city) {
+      query = query.ilike('city', `%${input.city}%`);
     }
+
+    if (input.cuisine) {
+      query = query.ilike('type', `%${input.cuisine}%`);
+    }
+
+    // Limit results
+    query = query.limit(input.limit);
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(`Failed to fetch restaurants: ${error.message}`);
+    }
+
+    return {
+      success: true,
+      count: data?.length || 0,
+      restaurants: data || [],
+    };
   });

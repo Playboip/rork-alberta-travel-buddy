@@ -1379,7 +1379,8 @@ export default function DiningScreen() {
 
   // Transform Supabase venue data to Restaurant format
   useEffect(() => {
-    if (restaurantData?.success && restaurantData.restaurants) {
+    if (restaurantData?.success && restaurantData.restaurants && restaurantData.restaurants.length > 0) {
+      // Successfully fetched data from Supabase
       const transformedRestaurants: Restaurant[] = restaurantData.restaurants.map((venue: Venue) => ({
         id: venue.id,
         name: venue.name,
@@ -1398,11 +1399,15 @@ export default function DiningScreen() {
         specialties: venue.known_for ? venue.known_for.split(',').map(s => s.trim()) : [],
       }));
       setRestaurants(transformedRestaurants);
-    } else if (!isLoading && restaurantData?.restaurants?.length === 0) {
-      // Fallback to hardcoded data if no data in Supabase
+    } else if (!isLoading && (error || !restaurantData?.success || restaurantData?.restaurants?.length === 0)) {
+      // Fallback to hardcoded data if:
+      // - There's an error fetching from Supabase
+      // - The fetch was not successful
+      // - No data in Supabase
+      // - Not currently loading
       setRestaurants(RESTAURANTS);
     }
-  }, [restaurantData, isLoading]);
+  }, [restaurantData, isLoading, error]);
 
   const filteredRestaurants = restaurants.filter((restaurant) => {
     const areaMatch =

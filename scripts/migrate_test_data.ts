@@ -429,7 +429,7 @@ async function migrateRestaurantsToSupabase() {
 
     // Verify the data
     console.log('\n🔍 Verifying migration...');
-    const { data: restaurantCount, error: countError } = await supabase
+    const { count: restaurantCount, error: countError } = await supabase
       .from('venues')
       .select('*', { count: 'exact', head: true })
       .eq('category', 'restaurant');
@@ -437,7 +437,7 @@ async function migrateRestaurantsToSupabase() {
     if (countError) {
       console.error(`   ❌ Error counting restaurants: ${countError.message}`);
     } else {
-      console.log(`   ✅ Total restaurants in database: ${restaurantCount}`);
+      console.log(`   ✅ Total restaurants in database: ${restaurantCount || 0}`);
     }
 
     console.log('\n✅ Migration completed successfully!');
@@ -449,7 +449,7 @@ async function migrateRestaurantsToSupabase() {
   }
 }
 
-// Run the script
+// Run the script (Node.js specific entry point check)
 if (require.main === module) {
   migrateRestaurantsToSupabase()
     .then(() => {

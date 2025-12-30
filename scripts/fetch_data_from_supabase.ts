@@ -145,7 +145,7 @@ async function fetchVenuesFromSupabase() {
   }
 }
 
-// Run the script
+// Run the script (Node.js specific entry point check)
 if (require.main === module) {
   fetchVenuesFromSupabase()
     .then(() => {

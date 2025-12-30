@@ -21,28 +21,19 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
  */
 export default publicProcedure
   .query(async () => {
-    try {
-      const { data, error } = await supabase
-        .from('venues')
-        .select('*')
-        .eq('category', 'restaurant')
-        .order('city', { ascending: true });
+    const { data, error } = await supabase
+      .from('venues')
+      .select('*')
+      .eq('category', 'restaurant')
+      .order('city', { ascending: true });
 
-      if (error) {
-        throw new Error(`Failed to fetch restaurants: ${error.message}`);
-      }
-
-      return {
-        success: true,
-        count: data?.length || 0,
-        restaurants: data || [],
-      };
-    } catch (error) {
-      return {
-        success: false,
-        count: 0,
-        restaurants: [],
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+    if (error) {
+      throw new Error(`Failed to fetch restaurants: ${error.message}`);
     }
+
+    return {
+      success: true,
+      count: data?.length || 0,
+      restaurants: data || [],
+    };
   });
