@@ -13,7 +13,11 @@
  *   EXPO_PUBLIC_SUPABASE_ANON_KEY - Your Supabase anonymous key
  */
 
+import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+
+// Load environment variables from .env file
+config();
 
 interface Restaurant {
   id: string;
