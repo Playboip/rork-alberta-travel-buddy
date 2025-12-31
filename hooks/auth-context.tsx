@@ -168,7 +168,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
           const access_token = url.queryParams?.access_token as string;
           const refresh_token = url.queryParams?.refresh_token as string;
 
-          if (access_token && refresh_token) {
+          if (access_token && refresh_token && access_token.trim() && refresh_token.trim()) {
             const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
               access_token,
               refresh_token,
@@ -181,17 +181,27 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
             if (sessionData.user) {
               console.log('Google login successful for user:', sessionData.user.id);
               
+              // Extract name from user metadata or email
+              const userName = sessionData.user.user_metadata?.full_name || 
+                              sessionData.user.user_metadata?.name || 
+                              sessionData.user.email?.split('@')[0] || 
+                              'Google User';
+              
               // Create or update user profile
               await createUserProfile(
                 sessionData.user.id,
                 sessionData.user.email || '',
-                sessionData.user.user_metadata?.full_name || sessionData.user.user_metadata?.name || 'User',
+                userName,
                 'Unknown'
               );
             }
+          } else {
+            throw new Error('Failed to retrieve authentication tokens from Google.');
           }
         } else if (result.type === 'cancel') {
           throw new Error('Google login was cancelled.');
+        } else if (result.type === 'dismiss') {
+          throw new Error('Google login was dismissed.');
         }
       }
       
@@ -228,8 +238,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
           data: {
             name: name,
             location: location
-          },
-          emailRedirectTo: undefined // Disable email confirmation for now
+          }
         }
       });
 
