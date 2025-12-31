@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { supabase } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
+import { makeRedirectUri } from 'expo-auth-session';
+
+// Needed for Google OAuth to work properly
+WebBrowser.maybeCompleteAuthSession();
 
 interface AuthState {
   user: User | null;
@@ -11,7 +17,8 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, location: string) => Promise<{ requiresEmailConfirmation?: boolean; emailDelayed?: boolean } | void>;
+  loginWithGoogle: () => Promise<void>;
+  register: (email: string, password: string, name: string, location: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -121,6 +128,75 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       
     } catch (error) {
       console.error('Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    setIsLoading(true);
+    try {
+      console.log('Attempting Google login...');
+      
+      const redirectUrl = makeRedirectUri({
+        scheme: 'myapp',
+        path: 'auth/callback',
+      });
+      
+      console.log('Redirect URL:', redirectUrl);
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: false,
+        },
+      });
+
+      if (error) {
+        console.error('Google login error:', error);
+        throw new Error(error.message || 'Google login failed. Please try again.');
+      }
+
+      if (data.url) {
+        console.log('Opening Google auth URL...');
+        const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+        
+        if (result.type === 'success' && result.url) {
+          const url = Linking.parse(result.url);
+          const access_token = url.queryParams?.access_token as string;
+          const refresh_token = url.queryParams?.refresh_token as string;
+
+          if (access_token && refresh_token) {
+            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            });
+
+            if (sessionError) {
+              throw new Error(sessionError.message);
+            }
+
+            if (sessionData.user) {
+              console.log('Google login successful for user:', sessionData.user.id);
+              
+              // Create or update user profile
+              await createUserProfile(
+                sessionData.user.id,
+                sessionData.user.email || '',
+                sessionData.user.user_metadata?.full_name || sessionData.user.user_metadata?.name || 'User',
+                'Unknown'
+              );
+            }
+          }
+        } else if (result.type === 'cancel') {
+          throw new Error('Google login was cancelled.');
+        }
+      }
+      
+    } catch (error) {
+      console.error('Google login error:', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -322,6 +398,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
     isLoading,
     isAuthenticated: !!session && !!user,
     login,
+    loginWithGoogle,
     register,
     logout,
     updateUser,
