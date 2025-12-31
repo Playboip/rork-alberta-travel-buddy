@@ -151,26 +151,9 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
 
     try {
       console.log('Starting registration process...');
-      const result = await register(email.trim(), password, name.trim(), detectedLocation.trim());
+      await register(email.trim(), password, name.trim(), detectedLocation.trim());
       
-      // Check if email confirmation is required
-      if (result?.requiresEmailConfirmation) {
-        const message = result?.emailDelayed 
-          ? 'Your account has been created successfully! Due to temporary email service restrictions, confirmation emails may be delayed. You can try logging in after a few minutes, or wait for the confirmation email to arrive.'
-          : 'Your account has been created successfully. Please check your email and click the confirmation link to activate your account before signing in.';
-        
-        Alert.alert(
-          'Registration Successful!', 
-          message,
-          [
-            { text: 'Try Login Now', onPress: () => onSwitchToLogin() },
-            { text: 'OK', style: 'cancel' }
-          ]
-        );
-        return;
-      }
-      
-      // If we get here, registration was successful and user is logged in
+      // If we get here, registration was successful
       Alert.alert('Success', 'Account created successfully!');
     } catch (error: any) {
       console.error('Registration failed:', error);
@@ -178,14 +161,10 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
       let errorMessage = 'Registration failed. Please try again.';
       
       if (error.message) {
-        if (error.message.includes('email') || error.message.includes('already registered')) {
+        if (error.message.includes('email') || error.message.includes('already registered') || error.message.includes('already exists')) {
           errorMessage = 'This email is already registered. Please use a different email or try signing in.';
         } else if (error.message.includes('password')) {
           errorMessage = 'Password is too weak. Please use a stronger password.';
-        } else if (error.message.includes('Database connection')) {
-          errorMessage = 'Unable to connect to our servers. Please check your internet connection and try again.';
-        } else if (error.message.includes('duplicate key') || error.message.includes('already exists')) {
-          errorMessage = 'An account with this email already exists. Please try signing in instead.';
         } else {
           errorMessage = error.message;
         }

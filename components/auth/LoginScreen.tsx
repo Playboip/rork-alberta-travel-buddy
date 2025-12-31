@@ -12,8 +12,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showResendButton, setShowResendButton] = useState(false);
-  const { login, isLoading, resendConfirmation } = useAuth();
+  const { login, isLoading } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -22,47 +21,11 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
     }
 
     try {
-      setShowResendButton(false);
       await login(email, password);
     } catch (error: any) {
       console.log('Login error caught:', error);
       const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
-      
-      // Handle email confirmation error specifically
-      if (errorMessage === 'UNCONFIRMED_EMAIL_DELAYED') {
-        setShowResendButton(true);
-        Alert.alert(
-          'Email Confirmation Delayed', 
-          'Due to temporary email service restrictions, confirmation emails may be delayed. Your account may already be active - try logging in again in a few minutes.\n\nYou can also try resending the confirmation email using the button below.',
-          [{ text: 'OK', style: 'default' }]
-        );
-      } else if (errorMessage.includes('If you recently registered')) {
-        // Show resend button for potential unconfirmed email cases
-        setShowResendButton(true);
-        Alert.alert('Login Failed', errorMessage);
-      } else {
-        Alert.alert('Login Failed', errorMessage);
-      }
-    }
-  };
-
-  const handleResendConfirmation = async () => {
-    if (!email) {
-      Alert.alert('Error', 'Please enter your email address first');
-      return;
-    }
-
-    try {
-      await resendConfirmation(email);
-      Alert.alert(
-        'Email Sent', 
-        'A new confirmation email has been sent to your email address. Please check your inbox and click the confirmation link.',
-        [{ text: 'OK', style: 'default' }]
-      );
-    } catch (error: any) {
-      console.log('Resend confirmation error:', error);
-      const errorMessage = error?.message || 'Failed to resend confirmation email. Please try again.';
-      Alert.alert('Error', errorMessage);
+      Alert.alert('Login Failed', errorMessage);
     }
   };
 
@@ -132,18 +95,6 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
             </Text>
           </TouchableOpacity>
 
-          {showResendButton && (
-            <TouchableOpacity
-              style={styles.resendButton}
-              onPress={handleResendConfirmation}
-              testID="resend-confirmation-button"
-            >
-              <Text style={styles.resendButtonText}>
-                Resend Confirmation Email (May Be Delayed)
-              </Text>
-            </TouchableOpacity>
-          )}
-
           <TouchableOpacity onPress={onSwitchToRegister}>
             <Text style={styles.switchText}>
               Don&apos;t have an account? <Text style={styles.switchLink}>Sign Up</Text>
@@ -210,19 +161,6 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  resendButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  resendButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
     color: '#ffffff',
   },
   switchText: {
