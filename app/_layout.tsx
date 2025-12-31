@@ -7,7 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/auth-context";
 import { SubscriptionProvider } from "@/hooks/subscription-context";
 import LoginScreen from "@/components/auth/LoginScreen";
 import RegisterScreen from "@/components/auth/RegisterScreen";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { trpc, trpcClient } from "@/lib/trpc";
 
 SplashScreen.preventAutoHideAsync();
@@ -17,7 +17,6 @@ const queryClient = new QueryClient();
 function AuthWrapper({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
-  const [testMode, setTestMode] = useState(false);
 
   useEffect(() => {
     if (!isLoading) {
@@ -29,11 +28,6 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  // Test mode bypass
-  if (testMode) {
-    return <>{children}</>;
-  }
-
   if (!isAuthenticated) {
     return (
       <View style={styles.authContainer}>
@@ -42,14 +36,6 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
         ) : (
           <LoginScreen onSwitchToRegister={() => setShowRegister(true)} />
         )}
-        
-        {/* Test Mode Button */}
-        <TouchableOpacity 
-          style={styles.testModeButton}
-          onPress={() => setTestMode(true)}
-        >
-          <Text style={styles.testModeText}>Enter Test Mode (Skip Auth)</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -62,6 +48,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="subscription" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="+not-found" />
     </Stack>
   );
 }
@@ -87,20 +74,5 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   authContainer: {
     flex: 1,
-  },
-  testModeButton: {
-    position: 'absolute',
-    bottom: 50,
-    left: 20,
-    right: 20,
-    backgroundColor: '#dc2626',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  testModeText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
   },
 });

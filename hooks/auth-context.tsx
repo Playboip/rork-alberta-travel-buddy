@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { supabase } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
+import { makeRedirectUri } from 'expo-auth-session';
+
+// Needed for Google OAuth to work properly
+WebBrowser.maybeCompleteAuthSession();
 
 interface AuthState {
   user: User | null;
@@ -11,7 +17,8 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, location: string) => Promise<{ requiresEmailConfirmation?: boolean; emailDelayed?: boolean } | void>;
+  loginWithGoogle: () => Promise<void>;
+  register: (email: string, password: string, name: string, location: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -110,40 +117,96 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       if (error) {
         console.error('Login error:', error);
-        console.log('Error details:', {
-          message: error.message,
-          status: error.status,
-          name: error.name
-        });
-        
-        // Handle specific error cases
-        if (error.message.includes('Email not confirmed') || 
-            error.message.includes('email_not_confirmed') ||
-            error.message.includes('signup_disabled')) {
-          throw new Error('UNCONFIRMED_EMAIL_DELAYED');
-        } else if (error.message.includes('Invalid login credentials') || 
-                   error.message.includes('invalid_credentials') ||
-                   error.status === 400) {
-          // For invalid credentials, mention email service issues
-          throw new Error('Invalid email or password. If you recently registered, email confirmation may be delayed due to temporary service restrictions. Please try again in a few minutes.');
-        } else if (error.message.includes('Too many requests')) {
-          throw new Error('Too many login attempts. Please wait a moment and try again.');
-        } else {
-          throw new Error(error.message || 'Login failed. Please try again.');
-        }
+        throw new Error(error.message || 'Login failed. Please try again.');
       }
 
       if (!data.user) {
         throw new Error('Login failed. No user data received.');
       }
 
-      // TEMPORARY: Skip email confirmation check due to email service restrictions
-      // This allows users to login even if confirmation email wasn't received
       console.log('Login successful for user:', data.user.id);
-      console.log('Email confirmation status:', data.user.email_confirmed_at ? 'confirmed' : 'pending (bypassed due to email service issues)');
       
     } catch (error) {
       console.error('Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    setIsLoading(true);
+    try {
+      console.log('Attempting Google login...');
+      
+      const redirectUrl = makeRedirectUri({
+        scheme: 'myapp',
+        path: 'auth/callback',
+      });
+      
+      console.log('Redirect URL:', redirectUrl);
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: false,
+        },
+      });
+
+      if (error) {
+        console.error('Google login error:', error);
+        throw new Error(error.message || 'Google login failed. Please try again.');
+      }
+
+      if (data.url) {
+        console.log('Opening Google auth URL...');
+        const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+        
+        if (result.type === 'success' && result.url) {
+          const url = Linking.parse(result.url);
+          const access_token = url.queryParams?.access_token as string;
+          const refresh_token = url.queryParams?.refresh_token as string;
+
+          if (access_token && refresh_token && access_token.trim() && refresh_token.trim()) {
+            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            });
+
+            if (sessionError) {
+              throw new Error(sessionError.message);
+            }
+
+            if (sessionData.user) {
+              console.log('Google login successful for user:', sessionData.user.id);
+              
+              // Extract name from user metadata or email
+              const userName = sessionData.user.user_metadata?.full_name || 
+                              sessionData.user.user_metadata?.name || 
+                              sessionData.user.email?.split('@')[0] || 
+                              'Google User';
+              
+              // Create or update user profile
+              await createUserProfile(
+                sessionData.user.id,
+                sessionData.user.email || '',
+                userName,
+                'Unknown'
+              );
+            }
+          } else {
+            throw new Error('Failed to retrieve authentication tokens from Google.');
+          }
+        } else if (result.type === 'cancel') {
+          throw new Error('Google login was cancelled.');
+        } else if (result.type === 'dismiss') {
+          throw new Error('Google login was dismissed.');
+        }
+      }
+      
+    } catch (error) {
+      console.error('Google login error:', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -155,41 +218,6 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
     try {
       console.log('Attempting registration for:', email);
       
-      // Test database connection first
-      console.log('Testing database connection...');
-      try {
-        const { error: connectionError } = await supabase
-          .from('profiles')
-          .select('id', { head: true, count: 'exact' })
-          .limit(1);
-
-        if (connectionError) {
-          const readable = (connectionError as any)?.message
-            ?? (typeof (connectionError as any) === 'string' ? (connectionError as any) : (() => {
-              try { return JSON.stringify(connectionError); } catch { return String(connectionError); }
-            })());
-          console.warn('Database connection check reported error:', readable);
-          if (
-            readable?.toString().toLowerCase().includes('failed to fetch') ||
-            readable?.toString().toLowerCase().includes('network') ||
-            (connectionError as any)?.name === 'TypeError'
-          ) {
-            console.warn('Network issue detected during preflight check. Proceeding with signup and will create profile later.');
-          } else {
-            throw new Error(`Database connection failed: ${readable}`);
-          }
-        } else {
-          console.log('Database connection successful');
-        }
-      } catch (precheckErr) {
-        const msg = (precheckErr as any)?.message ?? String(precheckErr);
-        if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('network')) {
-          console.warn('Network error on connection precheck. Continuing registration.');
-        } else {
-          throw precheckErr;
-        }
-      }
-
       // Check if user already exists
       console.log('Checking if user already exists...');
       const { data: existingProfile } = await supabase
@@ -201,10 +229,6 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
       if (existingProfile) {
         throw new Error('An account with this email already exists. Please try signing in instead.');
       }
-
-      // TEMPORARY: Due to email sending restrictions, we'll show a warning
-      // but still attempt registration
-      console.log('WARNING: Email confirmation may be affected due to temporary email restrictions');
 
       // Attempt to sign up the user
       const { data, error } = await supabase.auth.signUp({
@@ -224,8 +248,6 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
           throw new Error('An account with this email already exists. Please try signing in instead.');
         } else if (error.message.includes('Password should be')) {
           throw new Error('Password is too weak. Please use a stronger password with at least 6 characters.');
-        } else if (error.message.includes('email') && error.message.includes('rate')) {
-          throw new Error('Email service is temporarily unavailable. Your account has been created but email confirmation is delayed. Please try logging in after a few minutes.');
         } else {
           throw new Error(error.message || 'Registration failed. Please try again.');
         }
@@ -237,40 +259,19 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       console.log('User created successfully:', data.user.id);
 
-      // Create user profile - try multiple approaches (best-effort even if network flaky)
-      try {
-        await createUserProfile(data.user.id, email, name, location);
-      } catch (profileErr) {
-        console.warn('Non-fatal: profile creation deferred. Reason:', (profileErr as any)?.message ?? String(profileErr));
-      }
+      // Create user profile
+      await createUserProfile(data.user.id, email, name, location);
 
-      // Handle different registration scenarios
+      // If user has a session (auto-confirmed), load the profile
       if (data.session) {
-        // User is immediately logged in (email confirmation disabled)
         console.log('User registered and logged in successfully');
         await loadUserProfile(data.user.id);
-      } else if (data.user && !data.user.email_confirmed_at) {
-        // Email confirmation required - but may be delayed due to email restrictions
-        console.log('Registration successful, email confirmation required (may be delayed)');
-        // Return a special success object with additional info
-        return { 
-          requiresEmailConfirmation: true,
-          emailDelayed: true
-        };
-      } else {
-        // Other scenarios
-        console.log('Registration completed, user needs to sign in');
       }
 
     } catch (error) {
-      const readable = (error as any)?.message ?? (() => {
-        try { return JSON.stringify(error); } catch { return String(error); }
-      })();
+      const readable = (error as any)?.message ?? String(error);
       console.error('Registration error:', readable);
-      if (typeof readable === 'string' && (readable.toLowerCase().includes('failed to fetch') || readable.toLowerCase().includes('network'))) {
-        throw new Error('Unable to reach server. Please check your internet connection and try again.');
-      }
-      throw new Error(readable);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -390,13 +391,10 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
 
       if (error) {
         console.error('Resend confirmation error:', error);
-        if (error.message.includes('rate') || error.message.includes('limit')) {
-          throw new Error('Email service is temporarily restricted. Please try logging in directly as your account may already be active.');
-        }
         throw new Error(error.message);
       }
 
-      console.log('Confirmation email request sent (may be delayed due to service restrictions)');
+      console.log('Confirmation email sent successfully');
     } catch (error) {
       console.error('Resend confirmation error:', error);
       throw error;
@@ -409,6 +407,7 @@ export const [AuthProvider, useAuth] = createContextHook((): AuthState => {
     isLoading,
     isAuthenticated: !!session && !!user,
     login,
+    loginWithGoogle,
     register,
     logout,
     updateUser,

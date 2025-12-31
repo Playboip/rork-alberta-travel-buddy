@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, KeyboardAvo
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, Eye, EyeOff, MapPin } from 'lucide-react-native';
 import { useAuth } from '@/hooks/auth-context';
+import { GoogleIcon } from '@/components/shared/GoogleIcon';
 
 interface LoginScreenProps {
   onSwitchToRegister: () => void;
@@ -12,8 +13,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showResendButton, setShowResendButton] = useState(false);
-  const { login, isLoading, resendConfirmation } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -22,47 +22,21 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
     }
 
     try {
-      setShowResendButton(false);
       await login(email, password);
     } catch (error: any) {
       console.log('Login error caught:', error);
       const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
-      
-      // Handle email confirmation error specifically
-      if (errorMessage === 'UNCONFIRMED_EMAIL_DELAYED') {
-        setShowResendButton(true);
-        Alert.alert(
-          'Email Confirmation Delayed', 
-          'Due to temporary email service restrictions, confirmation emails may be delayed. Your account may already be active - try logging in again in a few minutes.\n\nYou can also try resending the confirmation email using the button below.',
-          [{ text: 'OK', style: 'default' }]
-        );
-      } else if (errorMessage.includes('If you recently registered')) {
-        // Show resend button for potential unconfirmed email cases
-        setShowResendButton(true);
-        Alert.alert('Login Failed', errorMessage);
-      } else {
-        Alert.alert('Login Failed', errorMessage);
-      }
+      Alert.alert('Login Failed', errorMessage);
     }
   };
 
-  const handleResendConfirmation = async () => {
-    if (!email) {
-      Alert.alert('Error', 'Please enter your email address first');
-      return;
-    }
-
+  const handleGoogleLogin = async () => {
     try {
-      await resendConfirmation(email);
-      Alert.alert(
-        'Email Sent', 
-        'A new confirmation email has been sent to your email address. Please check your inbox and click the confirmation link.',
-        [{ text: 'OK', style: 'default' }]
-      );
+      await loginWithGoogle();
     } catch (error: any) {
-      console.log('Resend confirmation error:', error);
-      const errorMessage = error?.message || 'Failed to resend confirmation email. Please try again.';
-      Alert.alert('Error', errorMessage);
+      console.log('Google login error caught:', error);
+      const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
+      Alert.alert('Google Login Failed', errorMessage);
     }
   };
 
@@ -132,17 +106,23 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
             </Text>
           </TouchableOpacity>
 
-          {showResendButton && (
-            <TouchableOpacity
-              style={styles.resendButton}
-              onPress={handleResendConfirmation}
-              testID="resend-confirmation-button"
-            >
-              <Text style={styles.resendButtonText}>
-                Resend Confirmation Email (May Be Delayed)
-              </Text>
-            </TouchableOpacity>
-          )}
+          <View style={styles.dividerContainer}>
+            <View style={styles.divider} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.divider} />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
+            onPress={handleGoogleLogin}
+            disabled={isLoading}
+            testID="google-login-button"
+          >
+            <GoogleIcon size={24} />
+            <Text style={styles.googleButtonText}>
+              {isLoading ? 'Signing In...' : 'Continue with Google'}
+            </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity onPress={onSwitchToRegister}>
             <Text style={styles.switchText}>
@@ -212,18 +192,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
   },
-  resendButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 12,
-    paddingVertical: 12,
+  dividerContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    marginVertical: 8,
   },
-  resendButtonText: {
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+  },
+  dividerText: {
+    color: '#e2e8f0',
+    paddingHorizontal: 16,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    paddingVertical: 16,
+    gap: 12,
+  },
+  googleButtonDisabled: {
+    opacity: 0.7,
+  },
+  googleButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: '#1f2937',
   },
   switchText: {
     textAlign: 'center',

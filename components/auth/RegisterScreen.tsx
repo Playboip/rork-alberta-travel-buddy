@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, User, MapPin, Eye, EyeOff } from 'lucide-react-native';
 import * as Location from 'expo-location';
 import { useAuth } from '@/hooks/auth-context';
+import { GoogleIcon } from '@/components/shared/GoogleIcon';
 
 interface RegisterScreenProps {
   onSwitchToLogin: () => void;
@@ -16,7 +17,7 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
   const [detectedLocation, setDetectedLocation] = useState('Calgary, AB'); // Default location
   const [showPassword, setShowPassword] = useState(false);
   const [locationStatus, setLocationStatus] = useState('Detecting your location...');
-  const { register, isLoading } = useAuth();
+  const { register, loginWithGoogle, isLoading } = useAuth();
 
   useEffect(() => {
     detectLocation();
@@ -151,26 +152,9 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
 
     try {
       console.log('Starting registration process...');
-      const result = await register(email.trim(), password, name.trim(), detectedLocation.trim());
+      await register(email.trim(), password, name.trim(), detectedLocation.trim());
       
-      // Check if email confirmation is required
-      if (result?.requiresEmailConfirmation) {
-        const message = result?.emailDelayed 
-          ? 'Your account has been created successfully! Due to temporary email service restrictions, confirmation emails may be delayed. You can try logging in after a few minutes, or wait for the confirmation email to arrive.'
-          : 'Your account has been created successfully. Please check your email and click the confirmation link to activate your account before signing in.';
-        
-        Alert.alert(
-          'Registration Successful!', 
-          message,
-          [
-            { text: 'Try Login Now', onPress: () => onSwitchToLogin() },
-            { text: 'OK', style: 'cancel' }
-          ]
-        );
-        return;
-      }
-      
-      // If we get here, registration was successful and user is logged in
+      // If we get here, registration was successful
       Alert.alert('Success', 'Account created successfully!');
     } catch (error: any) {
       console.error('Registration failed:', error);
@@ -178,20 +162,26 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
       let errorMessage = 'Registration failed. Please try again.';
       
       if (error.message) {
-        if (error.message.includes('email') || error.message.includes('already registered')) {
+        if (error.message.includes('email') || error.message.includes('already registered') || error.message.includes('already exists')) {
           errorMessage = 'This email is already registered. Please use a different email or try signing in.';
         } else if (error.message.includes('password')) {
           errorMessage = 'Password is too weak. Please use a stronger password.';
-        } else if (error.message.includes('Database connection')) {
-          errorMessage = 'Unable to connect to our servers. Please check your internet connection and try again.';
-        } else if (error.message.includes('duplicate key') || error.message.includes('already exists')) {
-          errorMessage = 'An account with this email already exists. Please try signing in instead.';
         } else {
           errorMessage = error.message;
         }
       }
       
       Alert.alert('Registration Failed', errorMessage);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (error: any) {
+      console.log('Google sign up error caught:', error);
+      const errorMessage = error?.message || 'An unexpected error occurred. Please try again.';
+      Alert.alert('Google Sign Up Failed', errorMessage);
     }
   };
 
@@ -282,6 +272,24 @@ export default function RegisterScreen({ onSwitchToLogin }: RegisterScreenProps)
               </Text>
             </TouchableOpacity>
 
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>OR</Text>
+              <View style={styles.divider} />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
+              onPress={handleGoogleSignUp}
+              disabled={isLoading}
+              testID="google-signup-button"
+            >
+              <GoogleIcon size={24} />
+              <Text style={styles.googleButtonText}>
+                {isLoading ? 'Signing Up...' : 'Continue with Google'}
+              </Text>
+            </TouchableOpacity>
+
             <TouchableOpacity onPress={onSwitchToLogin}>
               <Text style={styles.switchText}>
                 Already have an account? <Text style={styles.switchLink}>Sign In</Text>
@@ -366,6 +374,39 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+  },
+  dividerText: {
+    color: '#e2e8f0',
+    paddingHorizontal: 16,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    paddingVertical: 16,
+    gap: 12,
+  },
+  googleButtonDisabled: {
+    opacity: 0.7,
+  },
+  googleButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
   },
   switchText: {
     textAlign: 'center',
