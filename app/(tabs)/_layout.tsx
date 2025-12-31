@@ -1,22 +1,10 @@
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 import { Compass, Calendar, Shield, User, Users, CreditCard, Percent, Utensils } from "lucide-react-native";
 import React from "react";
-import { useAuth } from "@/hooks/auth-context";
+
 import Colors from "@/constants/colors";
 
 export default function TabLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  // Don't render anything while loading
-  if (isLoading) {
-    return null;
-  }
-
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
-    return <Redirect href="/auth/login" />;
-  }
-
   return (
     <Tabs
       screenOptions={{
