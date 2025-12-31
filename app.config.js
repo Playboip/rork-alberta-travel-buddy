@@ -1,3 +1,4 @@
+/* eslint prefer-const: "error" */
 module.exports = {
   name: "rork-alberta-travel-buddy",
   slug: "rork-alberta",
@@ -33,3 +34,5 @@ module.exports = {
     supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6ZXRkbG9reXFxZG54am50emt2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwOTQ5OTAsImV4cCI6MjA2ODY3MDk5MH0.JsUIArqIyWvlrGhFhx1YR1vZMQgBHoPm6jnhlA68wLo"
   }
 };
+
+
