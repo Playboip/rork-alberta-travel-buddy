@@ -36,3 +36,8 @@ yarn-error.*
 *.tsbuildinfo
 .vercel
 dist-test/
+
+# Package manager lock files (keep only package-lock.json)
+bun.lock
+yarn.lock
+pnpm-lock.yaml

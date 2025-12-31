@@ -12,6 +12,19 @@
 - **Solution**: Added Development Mode with bypass option
 - **Result**: **You can now access the app immediately!**
 
+## 📥 IMPORTANT: Get the Right Code First!
+
+This PR contains fixes that aren't in the main branch yet. To test these fixes:
+
+### ✅ Recommended: Clone the PR branch
+```bash
+git clone -b copilot/fix-linkingcontext-error https://github.com/Playboip/rork-alberta-travel-buddy.git
+cd rork-alberta-travel-buddy
+```
+
+### ❌ Don't download ZIP from main branch
+If you download a ZIP file from GitHub's main branch, it won't have these fixes yet. Wait for the PR to be merged first, or use the git clone command above.
+
 ## 🚀 HOW TO START THE APP RIGHT NOW
 
 ### Quick Start (3 Steps)
@@ -28,6 +41,13 @@ npm start
 #    - Press 'a' for Android emulator
 #    - Scan QR code for Expo Go
 ```
+
+### 🔧 Troubleshooting "bunx not recognized" Error
+If you see an error about `bunx` not being recognized:
+1. Make sure you cloned the **PR branch** (not main branch)
+2. Delete `bun.lock` file if it exists: `rm bun.lock` (Linux/Mac) or `del bun.lock` (Windows)
+3. Run `npm install` again
+4. Run `npm start`
 
 ### What You'll See
 When the app loads, you'll see a **Development Mode** screen:

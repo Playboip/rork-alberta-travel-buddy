@@ -2,6 +2,20 @@
 
 Your intelligent travel companion for exploring Alberta, Canada.
 
+## ⚠️ IMPORTANT: Testing This PR
+
+This branch contains fixes for the LinkingContext error. To test:
+
+```bash
+# Clone THIS PR branch (not main)
+git clone -b copilot/fix-linkingcontext-error https://github.com/Playboip/rork-alberta-travel-buddy.git
+cd rork-alberta-travel-buddy
+npm install
+npm start
+```
+
+**Don't download the main branch ZIP** - it doesn't have these fixes yet!
+
 ## 🚀 Quick Start (Get the App Running NOW!)
 
 The app now includes **Development Mode** that lets you bypass authentication and see the app immediately!
